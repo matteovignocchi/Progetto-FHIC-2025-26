@@ -370,4 +370,86 @@
                     </a>
 
                     <a href="C5/presentation.pdf" target="_blank" class="card">
-                        <div
+                        <div class="card-num">05</div>
+                        <div>
+                            <div class="card-title">Consegna 5</div>
+                            <div class="card-desc">Prototipo High-Fidelity & Usability Testing</div>
+                        </div>
+                        <div class="card-arrow">Apri ➔</div>
+                    </a>
+
+                </div>
+
+                <div class="final-wrapper">
+                    <div class="final-card-container">
+                        <a href="presentazione-finale/HelpMater.pdf" target="_blank" class="card highlight">
+                            <div class="card-num">Finale</div>
+                            <div>
+                                <div class="card-title">Presentazione Finale</div>
+                                <div class="card-desc">High-Fi Prototype & Pitch</div>
+                            </div>
+                            <div class="card-arrow">Apri ➔</div>
+                        </a>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="reveal">
+                <h2>Team</h2>
+                <div class="team-box">
+                    <a href="https://github.com/obviouslyme45" target="_blank" class="team-member">Birtig</a>
+                    <a href="https://github.com/tommaso-massari" target="_blank" class="team-member">Massari</a>
+                    <a href="https://github.com/Oleg-Nedina" target="_blank" class="team-member">Nedina</a>
+                    <a href="https://github.com/ilyapopovsky" target="_blank" class="team-member">Popovschii</a>
+                    <a href="https://github.com/matteovignocchi" target="_blank" class="team-member">Vignocchi</a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Neuron Project – Politecnico di Milano</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- 1. Funzione Reveal allo scroll (già presente) ---
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150; 
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal();
+
+        // --- 2. NUOVO: Script per far seguire il mouse alla mascotte ---
+        document.addEventListener('mousemove', (e) => {
+            // Se siamo su schermi piccoli, non eseguire lo script (risparmia risorse)
+            if (window.innerWidth <= 1300) return;
+
+            const follower = document.querySelector('.js-mouse-follower');
+            if (!follower) return;
+
+            // Calcola il centro dello schermo
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            // Calcola la distanza del mouse dal centro
+            // Dividiamo per un numero alto (es. 50) per rendere il movimento sottile
+            const moveX = (centerX - e.clientX) / 50;
+            const moveY = (centerY - e.clientY) / 50;
+
+            // Applica lo spostamento inverso al wrapper della mascotte
+            follower.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+    </script>
+
+</body>
+</html>
