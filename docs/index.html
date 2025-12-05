@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neuron | Repository HCI</title>
+    <title>Neuron | HelpMater Repository HCI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* MODIFICA 1: Sfondo leggermente più colorato (crema più caldo) */
-            --bg-base: #EFE5D5;
+            /* MODIFICA COLORE ULTRA: Sfondo base molto più caldo e saturo (pesca) */
+            --bg-base: #FFEDCC;
             
-            --primary: #15a97d; /* Il verde principale */
+            --primary: #15a97d;
             --primary-light: #e0f6ef;
             --accent: #E76F51;
             --text-dark: #264653;
@@ -34,24 +34,26 @@
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2;
             overflow: hidden;
-            background: linear-gradient(180deg, var(--bg-base) 0%, #fff 100%);
+            /* MODIFICA COLORE ULTRA: Gradiente più intenso che passa dal pesca al verde chiaro */
+            background: linear-gradient(135deg, var(--bg-base) 0%, #ffe0b2 50%, #c8e6c9 100%);
         }
 
         .blob {
             position: absolute;
             border-radius: 50%;
             filter: blur(80px);
-            opacity: 0.6;
+            /* MODIFICA COLORE ULTRA: Opacità quasi massima per colori vibranti */
+            opacity: 0.85;
             animation: float 10s infinite ease-in-out;
         }
 
-        .blob-1 { width: 500px; height: 500px; background: var(--primary-light); top: -10%; left: -10%; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(231, 111, 81, 0.15); bottom: 10%; right: -5%; animation-delay: 2s; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(21, 169, 125, 0.1); top: 40%; left: 30%; animation-delay: 4s; }
+        .blob-1 { width: 500px; height: 500px; background: var(--primary); top: -10%; left: -10%; } /* Usato il verde pieno */
+        .blob-2 { width: 400px; height: 400px; background: var(--accent); bottom: 10%; right: -5%; animation-delay: 2s; } /* Usato l'arancio pieno */
+        .blob-3 { width: 300px; height: 300px; background: #FFD700; top: 40%; left: 30%; animation-delay: 4s; } /* Aggiunto un giallo oro */
 
         @keyframes float {
             0% { transform: translate(0, 0); }
-            50% { transform: translate(20px, -20px); }
+            50% { transform: translate(30px, -30px); } /* Movimento blobs aumentato */
             100% { transform: translate(0, 0); }
         }
 
@@ -73,7 +75,7 @@
             padding-top: 40px;
         }
 
-        /* --- STILE MASCOTTE "VIVA" --- */
+        /* --- STILE MASCOTTE ULTRA DINAMICA --- */
         .buddy-wrapper {
             position: fixed;
             top: 25%;
@@ -82,34 +84,38 @@
             height: 280px;
             z-index: 1;
             pointer-events: none;
-            transition: transform 0.1s ease-out; 
+            /* Transizione rapidissima per il mouse */
+            transition: transform 0.05s ease-out; 
             will-change: transform;
         }
 
         .mascot-container {
             width: 100%;
             height: 100%;
-            animation: mascotFloatAlive 7s ease-in-out infinite; 
+            /* MODIFICA MOVIMENTO ULTRA: Velocità aumentata a 3s */
+            animation: mascotFloatUltra 3s ease-in-out infinite; 
         }
 
         .mascot-img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 20px 30px rgba(21, 169, 125, 0.2)); 
+            /* Ombra più intensa */
+            filter: drop-shadow(0 25px 40px rgba(21, 169, 125, 0.3)); 
             transition: all 0.3s ease;
         }
 
         .buddy-wrapper:hover .mascot-img {
-            filter: drop-shadow(0 30px 50px rgba(21, 169, 125, 0.4));
-            transform: scale(1.05);
+            filter: drop-shadow(0 40px 60px rgba(21, 169, 125, 0.6));
+            transform: scale(1.15);
         }
 
-        @keyframes mascotFloatAlive {
+        /* MODIFICA MOVIMENTO ULTRA: Movimenti molto più ampi */
+        @keyframes mascotFloatUltra {
             0%   { transform: translateY(0px) rotate(0deg) scale(1); }
-            25%  { transform: translateY(-15px) rotate(-2deg) scale(1.02); }
-            50%  { transform: translateY(-30px) rotate(0deg) scale(1.05); }
-            75%  { transform: translateY(-15px) rotate(2deg) scale(1.02); }
+            25%  { transform: translateY(-35px) rotate(-8deg) scale(1.05); } /* Rotazione forte */
+            50%  { transform: translateY(-70px) rotate(0deg) scale(1.15); }  /* Sale molto in alto, "respiro" profondo */
+            75%  { transform: translateY(-35px) rotate(8deg) scale(1.05); }  /* Rotazione forte opposta */
             100% { transform: translateY(0px) rotate(0deg) scale(1); }
         }
 
@@ -127,14 +133,18 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
-        h1 {
-            font-size: 5rem;
+        h1, h2 {
             font-weight: 800;
-            letter-spacing: -2px;
-            margin-bottom: 10px;
             background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 5rem;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
         }
 
         header p {
@@ -168,11 +178,9 @@
 
         .value-pill:hover { transform: translateY(-3px); }
 
-        /* MODIFICA 2: TUTTE LE PILLOLE VERDI */
-        /* Ho unito i selettori per applicare lo stesso stile verde a tutti */
         .val-mot, .val-edu, .val-con {
-            color: var(--primary); /* Verde principale */
-            border-color: rgba(21, 169, 125, 0.2); /* Bordo verde chiaro */
+            color: var(--primary);
+            border-color: rgba(21, 169, 125, 0.2);
         }
 
         .scroll-indicator {
@@ -189,7 +197,12 @@
         }
 
         section { padding: 80px 0; position: relative; }
-        h2 { font-size: 2.5rem; margin-bottom: 40px; text-align: center; color: var(--text-dark); }
+        
+        h2 { 
+            font-size: 2.5rem; 
+            margin-bottom: 40px; 
+        }
+        
         .intro-text { text-align: center; font-size: 1.2rem; max-width: 750px; margin: 0 auto; color: #555; line-height: 1.8; }
         
         .group-badge {
@@ -224,7 +237,8 @@
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--primary);
             transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
         }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+        /* MODIFICA COLORE: Bordo colorato all'hover */
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--primary-light); }
         .card:hover::before { transform: scaleX(1); }
         .card-num { font-size: 3.5rem; font-weight: 800; color: var(--primary-light); line-height: 1; margin-bottom: 10px; transition: color 0.4s; }
         .card:hover .card-num { color: #C8E6C9; }
@@ -290,7 +304,7 @@
     <div class="container">
         
         <header>
-            <div class="brand-tag reveal">HCI Repository 2025</div>
+            <div class="brand-tag reveal">HCI - HelpMater - Repository 2025</div>
             <h1 class="reveal">Neuron</h1>
             <p class="reveal">Un sistema per il benessere quotidiano.</p>
             
@@ -403,7 +417,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2025 Helpmater Project – Politecnico di Milano</p>
+            <p>&copy; 2025 HelpMater Project – Politecnico di Milano</p>
         </footer>
 
     </div>
@@ -429,8 +443,9 @@
             if (!follower) return;
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-            const moveX = (centerX - e.clientX) / 50;
-            const moveY = (centerY - e.clientY) / 50;
+            // MODIFICA MOVIMENTO ULTRA: Divisore abbassato a 15 per un movimento molto più ampio
+            const moveX = (centerX - e.clientX) / 15;
+            const moveY = (centerY - e.clientY) / 15;
             follower.style.transform = `translate(${moveX}px, ${moveY}px)`;
         });
     </script>
