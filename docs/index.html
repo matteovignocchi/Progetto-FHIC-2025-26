@@ -274,8 +274,26 @@
             transform: translateX(-50%);
         }
 
-        .team-member { font-weight: 600; color: var(--text-dark); position: relative; }
-        .team-member:not(:last-child)::after { content: '•'; margin-left: 20px; color: var(--primary); }
+        /* STILI PER I LINK DEL TEAM */
+        .team-member { 
+            font-weight: 600; 
+            color: var(--text-dark); 
+            position: relative; 
+            text-decoration: none; /* Toglie la sottolineatura standard */
+            transition: color 0.2s;
+        }
+
+        .team-member:hover {
+            color: var(--primary); /* Colore verde quando ci passi sopra */
+        }
+
+        .team-member:not(:last-child)::after { 
+            content: '•'; 
+            margin-left: 20px; 
+            color: var(--primary); 
+            display: inline-block; 
+            pointer-events: none; /* Il pallino non è cliccabile */
+        }
 
         footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
 
@@ -336,7 +354,7 @@
                 
                 <div class="grid-6">
                     
-                    <a href="C0/Consegna_0.pdf" target="_blank" class="card">
+                    <a href="C0/presentation.pdf" target="_blank" class="card">
                         <div class="card-num">00</div>
                         <div>
                             <div class="card-title">Consegna 0</div>
@@ -345,7 +363,7 @@
                         <div class="card-arrow">Apri ➔</div>
                     </a>
 
-                    <a href="C1/NeedFinding.pdf" target="_blank" class="card">
+                    <a href="C1/presentation.pdf" target="_blank" class="card">
                         <div class="card-num">01</div>
                         <div>
                             <div class="card-title">Consegna 1</div>
@@ -354,7 +372,7 @@
                         <div class="card-arrow">Apri ➔</div>
                     </a>
 
-                    <a href="C2/Refinement e Focus Group.pdf" target="_blank" class="card">
+                    <a href="C2/presentation.pdf" target="_blank" class="card">
                         <div class="card-num">02</div>
                         <div>
                             <div class="card-title">Consegna 2</div>
@@ -363,7 +381,7 @@
                         <div class="card-arrow">Apri ➔</div>
                     </a>
 
-                    <a href="C3/Task, Storyboard e Primi Prototipi.pdf" target="_blank" class="card">
+                    <a href="C3/presentation.pdf" target="_blank" class="card">
                         <div class="card-num">03</div>
                         <div>
                             <div class="card-title">Consegna 3</div>
@@ -408,13 +426,13 @@
             </section>
 
             <section class="reveal">
-                <h2>Authors</h2>
+                <h2>Team</h2>
                 <div class="team-box">
-                    <span class="team-member">Birtig</span>
-                    <span class="team-member">Massari</span>
-                    <span class="team-member">Nedina</span>
-                    <span class="team-member">Popovschii</span>
-                    <span class="team-member">Vignocchi</span>
+                    <a href="https://github.com/obviouslyme45" target="_blank" class="team-member">Birtig</a>
+                    <a href="https://github.com/tommaso-massari" target="_blank" class="team-member">Massari</a>
+                    <a href="https://github.com/Oleg-Nedina" target="_blank" class="team-member">Nedina</a>
+                    <a href="https://github.com/ilyapopovsky" target="_blank" class="team-member">Popovschii</a>
+                    <a href="https://github.com/matteovignocchi" target="_blank" class="team-member">Vignocchi</a>
                 </div>
             </section>
         </main>
