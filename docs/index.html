@@ -9,13 +9,13 @@
     <style>
         :root {
             /* PALETTE ORIGINALE MATCHO SPACE (Intensificata) */
-            --bg-base: #F9F7F2;           /* Beige Originale */
-            --bg-gradient-end: #e8f5e9;   /* Verde chiarissimo per il gradiente */
+            --bg-base: #F9F7F2;           
+            --bg-gradient-end: #e8f5e9;   
             
-            --primary: #15a97d;           /* Verde Smeraldo */
-            --primary-light: #e0f6ef;     /* Verde Chiaro */
-            --accent: #E76F51;            /* Corallo */
-            --text-dark: #264653;         /* Blu Scuro */
+            --primary: #15a97d;           
+            --primary-light: #e0f6ef;     
+            --accent: #E76F51;            
+            --text-dark: #264653;         
             --text-light: #666;
             --white: #FFFFFF;
         }
@@ -35,47 +35,24 @@
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2;
             overflow: hidden;
-            /* GRADIENTE: Dal Beige al Verde chiarissimo (coerente col brand) */
             background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-base) 40%, var(--bg-gradient-end) 100%);
         }
 
         .blob {
             position: absolute;
             border-radius: 50%;
-            filter: blur(90px); /* Sfocatura morbida */
-            opacity: 0.65; /* Abbastanza visibili */
+            filter: blur(90px); 
+            opacity: 0.65; 
             animation: float 10s infinite ease-in-out;
         }
 
-        /* Blob 1: Verde (Alto Sinistra) */
-        .blob-1 { 
-            width: 600px; height: 600px; 
-            background: var(--primary); 
-            top: -15%; left: -10%; 
-            opacity: 0.25; /* Più leggero perché è grande */
-        }
-        
-        /* Blob 2: Corallo (Basso Destra - L'accento) */
-        .blob-2 { 
-            width: 500px; height: 500px; 
-            background: var(--accent); 
-            bottom: 5%; right: -10%; 
-            animation-delay: 2s; 
-            opacity: 0.35; 
-        }
-        
-        /* Blob 3: Verde (Centro - Sostituisce l'oro, per coerenza) */
-        .blob-3 { 
-            width: 400px; height: 400px; 
-            background: var(--primary); 
-            top: 40%; left: 20%; 
-            animation-delay: 4s; 
-            opacity: 0.2; 
-        }
+        .blob-1 { width: 600px; height: 600px; background: var(--primary); top: -15%; left: -10%; opacity: 0.25; }
+        .blob-2 { width: 500px; height: 500px; background: var(--accent); bottom: 5%; right: -10%; animation-delay: 2s; opacity: 0.35; }
+        .blob-3 { width: 400px; height: 400px; background: var(--primary); top: 40%; left: 20%; animation-delay: 4s; opacity: 0.2; }
 
         @keyframes float {
             0% { transform: translate(0, 0); }
-            50% { transform: translate(40px, -40px); } /* Movimento ampio */
+            50% { transform: translate(40px, -40px); } 
             100% { transform: translate(0, 0); }
         }
 
@@ -97,7 +74,7 @@
             padding-top: 40px;
         }
 
-        /* --- STILE MASCOTTE ULTRA DINAMICA --- */
+        /* --- STILE MASCOTTE --- */
         .buddy-wrapper {
             position: fixed;
             top: 25%;
@@ -106,7 +83,6 @@
             height: 280px;
             z-index: 1;
             pointer-events: none;
-            /* Transizione super reattiva al mouse */
             transition: transform 0.05s ease-out; 
             will-change: transform;
         }
@@ -114,7 +90,6 @@
         .mascot-container {
             width: 100%;
             height: 100%;
-            /* Animazione veloce (3s) */
             animation: mascotFloatUltra 3s ease-in-out infinite; 
         }
 
@@ -131,7 +106,6 @@
             transform: scale(1.15);
         }
 
-        /* Animazione ampia */
         @keyframes mascotFloatUltra {
             0%   { transform: translateY(0px) rotate(0deg) scale(1); }
             25%  { transform: translateY(-35px) rotate(-8deg) scale(1.05); } 
@@ -270,13 +244,61 @@
         .card.highlight::before { background: var(--accent); }
         .card.highlight .card-arrow { color: var(--accent); }
 
-        .team-box {
-            background: var(--white); border-radius: 100px; padding: 20px 40px; display: inline-flex; justify-content: center; align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 20px; position: relative; left: 50%; transform: translateX(-50%);
+        /* --- TEAM STYLE --- */
+        .team-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 20px;
         }
-        .team-member { font-weight: 600; color: var(--text-dark); position: relative; text-decoration: none; transition: color 0.2s; }
-        .team-member:hover { color: var(--primary); }
-        .team-member:not(:last-child)::after { content: '•'; margin-left: 20px; color: var(--primary); display: inline-block; pointer-events: none; }
+
+        .team-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            group: team-group;
+            width: 100px;
+        }
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--white);
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .team-name {
+            margin-top: 12px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .team-card:hover .avatar-circle {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(21, 169, 125, 0.2);
+        }
+
+        .team-card:hover .team-name {
+            color: var(--primary);
+        }
 
         footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
         .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
@@ -296,8 +318,7 @@
 
         @media (max-width: 768px) {
             h1 { font-size: 3.5rem; }
-            .team-box { border-radius: 24px; flex-direction: column; gap: 5px; padding: 30px;}
-            .team-member:not(:last-child)::after { content: ''; margin: 0; }
+            .team-container { gap: 20px; }
             .values-container { flex-direction: column; gap: 10px; }
             .final-card-container { max-width: 100%; }
         }
@@ -422,12 +443,43 @@
 
             <section class="reveal">
                 <h2>Team</h2>
-                <div class="team-box">
-                    <a href="https://github.com/obviouslyme45" target="_blank" class="team-member">Birtig</a>
-                    <a href="https://github.com/tommaso-massari" target="_blank" class="team-member">Massari</a>
-                    <a href="https://github.com/Oleg-Nedina" target="_blank" class="team-member">Nedina</a>
-                    <a href="https://github.com/ilyapopovsky" target="_blank" class="team-member">Popovschii</a>
-                    <a href="https://github.com/matteovignocchi" target="_blank" class="team-member">Vignocchi</a>
+                <div class="team-container">
+                    
+                    <a href="https://github.com/obviouslyme45" target="_blank" class="team-card">
+                        <div class="avatar-circle">
+                            <img src="pim.webp" class="avatar-img" alt="Birtig">
+                        </div>
+                        <span class="team-name">Birtig</span>
+                    </a>
+
+                    <a href="https://github.com/tommaso-massari" target="_blank" class="team-card">
+                        <div class="avatar-circle">
+                            <img src="charlie.webp" class="avatar-img" alt="Massari">
+                        </div>
+                        <span class="team-name">Massari</span>
+                    </a>
+
+                    <a href="https://github.com/Oleg-Nedina" target="_blank" class="team-card">
+                        <div class="avatar-circle">
+                            <img src="MrBoss.webp" class="avatar-img" alt="Nedina">
+                        </div>
+                        <span class="team-name">Nedina</span>
+                    </a>
+
+                    <a href="https://github.com/ilyapopovsky" target="_blank" class="team-card">
+                        <div class="avatar-circle">
+                            <img src="allan.webp" class="avatar-img" alt="Popovschii">
+                        </div>
+                        <span class="team-name">Popovschii</span>
+                    </a>
+
+                    <a href="https://github.com/matteovignocchi" target="_blank" class="team-card">
+                        <div class="avatar-circle">
+                            <img src="glep.webp" class="avatar-img" alt="Vignocchi">
+                        </div>
+                        <span class="team-name">Vignocchi</span>
+                    </a>
+
                 </div>
             </section>
         </main>
@@ -459,7 +511,6 @@
             if (!follower) return;
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-            // Movimento molto ampio per seguire il mouse (/15)
             const moveX = (centerX - e.clientX) / 15;
             const moveY = (centerY - e.clientY) / 15;
             follower.style.transform = `translate(${moveX}px, ${moveY}px)`;
