@@ -8,10 +8,8 @@
 
     <style>
         :root {
-            /* PALETTE ORIGINALE MATCHO SPACE (Intensificata) */
             --bg-base: #F9F7F2;           
             --bg-gradient-end: #e8f5e9;   
-            
             --primary: #15a97d;           
             --primary-light: #e0f6ef;     
             --accent: #E76F51;            
@@ -74,7 +72,7 @@
             padding-top: 40px;
         }
 
-        /* --- STILE MASCOTTE --- */
+        /* --- STILE MASCOTTE HEADER --- */
         .buddy-wrapper {
             position: fixed;
             top: 25%;
@@ -135,86 +133,31 @@
             text-align: center;
         }
 
-        h1 {
-            font-size: 5rem;
-            letter-spacing: -2px;
-            margin-bottom: 10px;
-        }
+        h1 { font-size: 5rem; letter-spacing: -2px; margin-bottom: 10px; }
+        header p { font-size: 1.5rem; color: var(--text-light); max-width: 600px; font-weight: 300; margin-bottom: 30px; }
 
-        header p {
-            font-size: 1.5rem;
-            color: var(--text-light);
-            max-width: 600px;
-            font-weight: 300;
-            margin-bottom: 30px;
-        }
-
-        .values-container {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 40px;
-        }
-
+        .values-container { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }
         .value-pill {
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 10px 24px;
-            border-radius: 30px;
-            background: var(--white);
-            border: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            transition: transform 0.3s;
+            font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 10px 24px;
+            border-radius: 30px; background: var(--white); border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.3s;
         }
-
         .value-pill:hover { transform: translateY(-3px); }
+        .val-mot, .val-edu, .val-con { color: var(--primary); border-color: rgba(21, 169, 125, 0.2); }
 
-        .val-mot, .val-edu, .val-con {
-            color: var(--primary);
-            border-color: rgba(21, 169, 125, 0.2);
-        }
-
-        .scroll-indicator {
-            margin-top: 20px;
-            animation: bounce 2s infinite;
-            color: var(--primary);
-            font-size: 24px;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
-            60% {transform: translateY(-5px);}
-        }
+        .scroll-indicator { margin-top: 20px; animation: bounce 2s infinite; color: var(--primary); font-size: 24px; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
         section { padding: 80px 0; position: relative; }
-        
         h2 { font-size: 2.5rem; margin-bottom: 40px; }
-        
         .intro-text { text-align: center; font-size: 1.2rem; max-width: 750px; margin: 0 auto; color: #555; line-height: 1.8; }
         
         .group-badge {
-            display: inline-block;
-            background: rgba(231, 111, 81, 0.1);
-            color: var(--accent);
-            font-weight: 800;
-            padding: 2px 10px;
-            border-radius: 6px;
-            font-size: 1rem;
-            margin: 0 4px;
-            border: 1px dashed rgba(231, 111, 81, 0.4);
+            display: inline-block; background: rgba(231, 111, 81, 0.1); color: var(--accent); font-weight: 800;
+            padding: 2px 10px; border-radius: 6px; font-size: 1rem; margin: 0 4px; border: 1px dashed rgba(231, 111, 81, 0.4);
         }
 
-        .grid-6 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
+        .grid-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px; }
         .final-wrapper { display: flex; justify-content: center; width: 100%; margin-top: 20px; }
         .final-card-container { width: 100%; max-width: 700px; }
 
@@ -234,9 +177,7 @@
         .card:hover .card-num { color: #C8E6C9; }
         .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; }
         .card-desc { font-size: 0.95rem; color: #888; line-height: 1.4; }
-        .card-arrow {
-            align-self: flex-end; margin-top: 20px; font-weight: bold; color: var(--primary); opacity: 0; transform: translateX(-10px); transition: all 0.4s;
-        }
+        .card-arrow { align-self: flex-end; margin-top: 20px; font-weight: bold; color: var(--primary); opacity: 0; transform: translateX(-10px); transition: all 0.4s; }
         .card:hover .card-arrow { opacity: 1; transform: translateX(0); }
 
         .card.highlight { border: 2px solid rgba(231, 111, 81, 0.1); background: linear-gradient(to bottom right, #fff, #fffcfb); }
@@ -244,7 +185,7 @@
         .card.highlight::before { background: var(--accent); }
         .card.highlight .card-arrow { color: var(--accent); }
 
-        /* --- TEAM STYLE MODIFICATO --- */
+        /* --- TEAM STYLE AGGIORNATO --- */
         .team-container {
             display: flex;
             justify-content: center;
@@ -265,8 +206,8 @@
         .avatar-circle {
             width: 160px;
             height: 160px;
-            /* MODIFICA FONDAMENTALE: Padding molto aumentato per rimpicciolire l'immagine */
-            padding: 30px; 
+            /* MODIFICA: PADDING ridotto leggermente per farle grandi, ma CONTAIN fa il resto */
+            padding: 10px; 
             border-radius: 50%;
             background: var(--white);
             overflow: hidden;
@@ -281,7 +222,9 @@
         .avatar-img {
             width: 100%;
             height: 100%;
-            object-fit: cover; 
+            /* MODIFICA FONDAMENTALE: CONTAIN invece di COVER */
+            /* Questo assicura che l'immagine si veda TUTTA, anche se è verticale */
+            object-fit: contain; 
         }
 
         .team-name {
