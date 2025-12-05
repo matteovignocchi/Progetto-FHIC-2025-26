@@ -244,13 +244,13 @@
         .card.highlight::before { background: var(--accent); }
         .card.highlight .card-arrow { color: var(--accent); }
 
-        /* --- TEAM STYLE --- */
+        /* --- TEAM STYLE MODIFICATO --- */
         .team-container {
             display: flex;
             justify-content: center;
             gap: 40px;
             flex-wrap: wrap;
-            margin-top: 20px;
+            margin-top: 40px; /* Aumentato margine superiore */
         }
 
         .team-card {
@@ -259,12 +259,13 @@
             align-items: center;
             text-decoration: none;
             group: team-group;
-            width: 100px;
+            width: 140px; /* Aumentata larghezza per i nomi completi */
         }
 
         .avatar-circle {
-            width: 80px;
-            height: 80px;
+            /* MODIFICA: DIMENSIONI AUMENTATE */
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background: var(--white);
             overflow: hidden;
@@ -283,17 +284,19 @@
         }
 
         .team-name {
-            margin-top: 12px;
+            margin-top: 15px;
             font-weight: 700;
             color: var(--text-dark);
-            font-size: 0.95rem;
+            font-size: 1rem; /* Leggermente più grande */
+            text-align: center;
+            line-height: 1.2;
             transition: color 0.3s ease;
         }
 
         .team-card:hover .avatar-circle {
             transform: translateY(-5px);
             border-color: var(--primary);
-            box-shadow: 0 10px 25px rgba(21, 169, 125, 0.2);
+            box-shadow: 0 15px 30px rgba(21, 169, 125, 0.3);
         }
 
         .team-card:hover .team-name {
@@ -318,7 +321,7 @@
 
         @media (max-width: 768px) {
             h1 { font-size: 3.5rem; }
-            .team-container { gap: 20px; }
+            .team-container { gap: 30px; }
             .values-container { flex-direction: column; gap: 10px; }
             .final-card-container { max-width: 100%; }
         }
@@ -447,37 +450,37 @@
                     
                     <a href="https://github.com/obviouslyme45" target="_blank" class="team-card">
                         <div class="avatar-circle">
-                            <img src="pim.webp" class="avatar-img" alt="Birtig">
+                            <img src="pim.webp" class="avatar-img" alt="Andrea Birtig">
                         </div>
-                        <span class="team-name">Birtig</span>
+                        <span class="team-name">Andrea Birtig</span>
                     </a>
 
                     <a href="https://github.com/tommaso-massari" target="_blank" class="team-card">
                         <div class="avatar-circle">
-                            <img src="charlie.webp" class="avatar-img" alt="Massari">
+                            <img src="charlie.webp" class="avatar-img" alt="Tommaso Massari">
                         </div>
-                        <span class="team-name">Massari</span>
+                        <span class="team-name">Tommaso Massari</span>
                     </a>
 
                     <a href="https://github.com/Oleg-Nedina" target="_blank" class="team-card">
                         <div class="avatar-circle">
-                            <img src="MrBoss.webp" class="avatar-img" alt="Nedina">
+                            <img src="MrBoss.webp" class="avatar-img" alt="Oleg Nedina">
                         </div>
-                        <span class="team-name">Nedina</span>
+                        <span class="team-name">Oleg Nedina</span>
                     </a>
 
                     <a href="https://github.com/ilyapopovsky" target="_blank" class="team-card">
                         <div class="avatar-circle">
-                            <img src="allan.webp" class="avatar-img" alt="Popovschii">
+                            <img src="allan.webp" class="avatar-img" alt="Ilia Popovschii">
                         </div>
-                        <span class="team-name">Popovschii</span>
+                        <span class="team-name">Ilia Popovschii</span>
                     </a>
 
                     <a href="https://github.com/matteovignocchi" target="_blank" class="team-card">
                         <div class="avatar-circle">
-                            <img src="glep.webp" class="avatar-img" alt="Vignocchi">
+                            <img src="glep.webp" class="avatar-img" alt="Matteo Vignocchi">
                         </div>
-                        <span class="team-name">Vignocchi</span>
+                        <span class="team-name">Matteo Vignocchi</span>
                     </a>
 
                 </div>
