@@ -1,50 +1,401 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HelpMater – Repository HCI</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuron | Repository HCI</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- PALETTE MATCHO SPACE --- */
+        :root {
+            --bg-base: #F9F7F2;           /* Beige */
+            --primary: #15a97d;           /* Verde Smeraldo */
+            --primary-light: #e0f6ef;     /* Verde Chiaro */
+            --accent: #E76F51;            /* Corallo */
+            --text-dark: #264653;         /* Blu scuro */
+            --text-light: #666;
+            --white: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-base);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- SFONDO NON MONOCROMATICO (Background Shapes) --- */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(180deg, #F9F7F2 0%, #fff 100%);
+        }
+
+        /* Forme sfumate sullo sfondo */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: float 10s infinite ease-in-out;
+        }
+        .blob-1 {
+            width: 500px; height: 500px;
+            background: var(--primary-light);
+            top: -10%; left: -10%;
+        }
+        .blob-2 {
+            width: 400px; height: 400px;
+            background: rgba(231, 111, 81, 0.15); /* Corallo leggero */
+            bottom: 10%; right: -5%;
+            animation-delay: 2s;
+        }
+        .blob-3 {
+            width: 300px; height: 300px;
+            background: rgba(21, 169, 125, 0.1); /* Verde leggero */
+            top: 40%; left: 30%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* --- LAYOUT --- */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            height: 90vh; /* Full screen intro */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .brand-tag {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 20px;
+            background: var(--white);
+            padding: 8px 16px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            max-width: 600px;
+            font-weight: 300;
+        }
+
+        .scroll-indicator {
+            margin-top: 60px;
+            animation: bounce 2s infinite;
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        /* --- SEZIONI --- */
+        section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        .intro-text {
+            text-align: center;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            color: #555;
+        }
+
+        /* --- CARDS CONSEGNE (GRID WEB) --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 24px;
+            text-decoration: none;
+            color: var(--text-dark);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 220px;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 6px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-num {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary-light);
+            line-height: 1;
+            margin-bottom: 10px;
+            transition: color 0.4s;
+        }
+        
+        .card:hover .card-num {
+            color: var(--matcha-light); /* Un po' più scuro all'hover */
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .card-arrow {
+            align-self: flex-end;
+            margin-top: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.4s;
+        }
+
+        .card:hover .card-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Special style for Final Presentation */
+        .card.highlight .card-num { color: rgba(231, 111, 81, 0.15); }
+        .card.highlight::before { background: var(--accent); }
+        .card.highlight .card-arrow { color: var(--accent); }
+
+        /* --- TEAM --- */
+        .team-box {
+            background: var(--white);
+            border-radius: 100px; /* Pill shape */
+            padding: 20px 40px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .team-member {
+            font-weight: 600;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .team-member:not(:last-child)::after {
+            content: '•';
+            margin-left: 20px;
+            color: var(--primary);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        /* --- ANIMAZIONI SCROLL (Scroll Reveal) --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; }
+            .team-box { border-radius: 24px; flex-direction: column; gap: 5px; padding: 30px;}
+            .team-member:not(:last-child)::after { content: ''; margin: 0; }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>HelpMater</h1>
-    <p><em>Un sistema integrato di supporto e orientamento universitario</em></p>
-  </header>
 
-  <main>
-    <!-- Sezione di presentazione -->
-    <section>
-      <h2>Presentazione</h2>
-      <p>
-        Questo sito raccoglie i materiali e le risorse del progetto <strong>HelpMater</strong>,
-        sviluppato per il corso di <em>Fondamenti di Human–Computer Interaction</em>
-        presso il <strong>Politecnico di Milano</strong>.
-      </p>
-      
-    </section>
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
-    <!-- Collegamenti principali -->
-    <section>
-      <h2>📂 Collegamenti ai materiali</h2>
-      <ul>
-        <li><a href="C0/">Consegna 0 </a></li>
-        <li><a href="C1/">Consegna 1 </a></li>
-        <li><a href="presentazione-finale/">Presentazione finale</a></li>
-      </ul>
-    </section>
+    <div class="container">
+        
+        <header>
+            <div class="brand-tag reveal">HCI Repository 2025</div>
+            <h1 class="reveal">Neuron</h1>
+            <p class="reveal">Un sistema integrato di supporto e orientamento universitario.</p>
+            <div class="scroll-indicator reveal">↓</div>
+        </header>
 
-    <!-- Autori -->
-    <section>
-      <h2>📜 Autori</h2>
-      <p>
-        <strong>Team:</strong> Birtig, Massari, Nedina, Popovschii, Vignocchi
-      </p>
-    </section>
-  </main>
+        <main>
+            <section class="reveal">
+                <h2>Il Progetto</h2>
+                <p class="intro-text">
+                    Questa repository raccoglie i materiali di progettazione e sviluppo per il corso di 
+                    <strong>Fondamenti di Human–Computer Interaction</strong> presso il <strong>Politecnico di Milano</strong>.
+                    <br><br>
+                    L'obiettivo è creare un ecosistema digitale che riduca lo stress accademico attraverso strumenti di supporto emotivo e organizzativo.
+                </p>
+            </section>
 
-  <footer>
-    <p>© 2025 HelpMater Project – Politecnico di Milano</p>
-  </footer>
+            <section class="reveal">
+                <h2>Roadmap & Materiali</h2>
+                <div class="cards-grid">
+                    
+                    <a href="C0/" class="card">
+                        <div class="card-num">01</div>
+                        <div>
+                            <div class="card-title">Consegna 0</div>
+                            <div class="card-desc">Needfinding & Concept</div>
+                        </div>
+                        <div class="card-arrow">Esplora ➔</div>
+                    </a>
+
+                    <a href="C1/" class="card">
+                        <div class="card-num">02</div>
+                        <div>
+                            <div class="card-title">Consegna 1</div>
+                            <div class="card-desc">Low-Fi Prototyping & Evaluation</div>
+                        </div>
+                        <div class="card-arrow">Esplora ➔</div>
+                    </a>
+
+                    <a href="presentazione-finale/" class="card highlight">
+                        <div class="card-num">03</div>
+                        <div>
+                            <div class="card-title">Finale</div>
+                            <div class="card-desc">High-Fi Prototype & Pitch</div>
+                        </div>
+                        <div class="card-arrow">Guarda Presentazione ➔</div>
+                    </a>
+
+                </div>
+            </section>
+
+            <section class="reveal">
+                <h2>Authors</h2>
+                <div class="team-box">
+                    <span class="team-member">Birtig</span>
+                    <span class="team-member">Massari</span>
+                    <span class="team-member">Nedina</span>
+                    <span class="team-member">Popovschii</span>
+                    <span class="team-member">Vignocchi</span>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Neuron Project – Politecnico di Milano</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Funzione semplice per attivare la classe .active quando l'elemento entra nello schermo
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150; // Distanza dal fondo per attivare
+
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+
+        window.addEventListener("scroll", reveal);
+        
+        // Attiva subito al caricamento per gli elementi già visibili (header)
+        reveal();
+    </script>
+
 </body>
 </html>
