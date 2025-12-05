@@ -8,13 +8,14 @@
 
     <style>
         :root {
-            /* MODIFICA COLORE ULTRA: Sfondo base molto più caldo e saturo (pesca) */
-            --bg-base: #FFEDCC;
+            /* PALETTE ORIGINALE MATCHO SPACE (Intensificata) */
+            --bg-base: #F9F7F2;           /* Beige Originale */
+            --bg-gradient-end: #e8f5e9;   /* Verde chiarissimo per il gradiente */
             
-            --primary: #15a97d;
-            --primary-light: #e0f6ef;
-            --accent: #E76F51;
-            --text-dark: #264653;
+            --primary: #15a97d;           /* Verde Smeraldo */
+            --primary-light: #e0f6ef;     /* Verde Chiaro */
+            --accent: #E76F51;            /* Corallo */
+            --text-dark: #264653;         /* Blu Scuro */
             --text-light: #666;
             --white: #FFFFFF;
         }
@@ -34,26 +35,47 @@
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2;
             overflow: hidden;
-            /* MODIFICA COLORE ULTRA: Gradiente più intenso che passa dal pesca al verde chiaro */
-            background: linear-gradient(135deg, var(--bg-base) 0%, #ffe0b2 50%, #c8e6c9 100%);
+            /* GRADIENTE: Dal Beige al Verde chiarissimo (coerente col brand) */
+            background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-base) 40%, var(--bg-gradient-end) 100%);
         }
 
         .blob {
             position: absolute;
             border-radius: 50%;
-            filter: blur(80px);
-            /* MODIFICA COLORE ULTRA: Opacità quasi massima per colori vibranti */
-            opacity: 0.85;
+            filter: blur(90px); /* Sfocatura morbida */
+            opacity: 0.65; /* Abbastanza visibili */
             animation: float 10s infinite ease-in-out;
         }
 
-        .blob-1 { width: 500px; height: 500px; background: var(--primary); top: -10%; left: -10%; } /* Usato il verde pieno */
-        .blob-2 { width: 400px; height: 400px; background: var(--accent); bottom: 10%; right: -5%; animation-delay: 2s; } /* Usato l'arancio pieno */
-        .blob-3 { width: 300px; height: 300px; background: #FFD700; top: 40%; left: 30%; animation-delay: 4s; } /* Aggiunto un giallo oro */
+        /* Blob 1: Verde (Alto Sinistra) */
+        .blob-1 { 
+            width: 600px; height: 600px; 
+            background: var(--primary); 
+            top: -15%; left: -10%; 
+            opacity: 0.25; /* Più leggero perché è grande */
+        }
+        
+        /* Blob 2: Corallo (Basso Destra - L'accento) */
+        .blob-2 { 
+            width: 500px; height: 500px; 
+            background: var(--accent); 
+            bottom: 5%; right: -10%; 
+            animation-delay: 2s; 
+            opacity: 0.35; 
+        }
+        
+        /* Blob 3: Verde (Centro - Sostituisce l'oro, per coerenza) */
+        .blob-3 { 
+            width: 400px; height: 400px; 
+            background: var(--primary); 
+            top: 40%; left: 20%; 
+            animation-delay: 4s; 
+            opacity: 0.2; 
+        }
 
         @keyframes float {
             0% { transform: translate(0, 0); }
-            50% { transform: translate(30px, -30px); } /* Movimento blobs aumentato */
+            50% { transform: translate(40px, -40px); } /* Movimento ampio */
             100% { transform: translate(0, 0); }
         }
 
@@ -84,7 +106,7 @@
             height: 280px;
             z-index: 1;
             pointer-events: none;
-            /* Transizione rapidissima per il mouse */
+            /* Transizione super reattiva al mouse */
             transition: transform 0.05s ease-out; 
             will-change: transform;
         }
@@ -92,7 +114,7 @@
         .mascot-container {
             width: 100%;
             height: 100%;
-            /* MODIFICA MOVIMENTO ULTRA: Velocità aumentata a 3s */
+            /* Animazione veloce (3s) */
             animation: mascotFloatUltra 3s ease-in-out infinite; 
         }
 
@@ -100,7 +122,6 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            /* Ombra più intensa */
             filter: drop-shadow(0 25px 40px rgba(21, 169, 125, 0.3)); 
             transition: all 0.3s ease;
         }
@@ -110,15 +131,14 @@
             transform: scale(1.15);
         }
 
-        /* MODIFICA MOVIMENTO ULTRA: Movimenti molto più ampi */
+        /* Animazione ampia */
         @keyframes mascotFloatUltra {
             0%   { transform: translateY(0px) rotate(0deg) scale(1); }
-            25%  { transform: translateY(-35px) rotate(-8deg) scale(1.05); } /* Rotazione forte */
-            50%  { transform: translateY(-70px) rotate(0deg) scale(1.15); }  /* Sale molto in alto, "respiro" profondo */
-            75%  { transform: translateY(-35px) rotate(8deg) scale(1.05); }  /* Rotazione forte opposta */
+            25%  { transform: translateY(-35px) rotate(-8deg) scale(1.05); } 
+            50%  { transform: translateY(-70px) rotate(0deg) scale(1.15); }  
+            75%  { transform: translateY(-35px) rotate(8deg) scale(1.05); } 
             100% { transform: translateY(0px) rotate(0deg) scale(1); }
         }
-
 
         .brand-tag {
             font-size: 14px;
@@ -198,10 +218,7 @@
 
         section { padding: 80px 0; position: relative; }
         
-        h2 { 
-            font-size: 2.5rem; 
-            margin-bottom: 40px; 
-        }
+        h2 { font-size: 2.5rem; margin-bottom: 40px; }
         
         .intro-text { text-align: center; font-size: 1.2rem; max-width: 750px; margin: 0 auto; color: #555; line-height: 1.8; }
         
@@ -237,7 +254,6 @@
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--primary);
             transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
         }
-        /* MODIFICA COLORE: Bordo colorato all'hover */
         .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--primary-light); }
         .card:hover::before { transform: scaleX(1); }
         .card-num { font-size: 3.5rem; font-weight: 800; color: var(--primary-light); line-height: 1; margin-bottom: 10px; transition: color 0.4s; }
@@ -443,7 +459,7 @@
             if (!follower) return;
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-            // MODIFICA MOVIMENTO ULTRA: Divisore abbassato a 15 per un movimento molto più ampio
+            // Movimento molto ampio per seguire il mouse (/15)
             const moveX = (centerX - e.clientX) / 15;
             const moveY = (centerY - e.clientY) / 15;
             follower.style.transform = `translate(${moveX}px, ${moveY}px)`;
