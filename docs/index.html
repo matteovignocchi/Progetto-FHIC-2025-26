@@ -8,8 +8,10 @@
 
     <style>
         :root {
-            --bg-base: #F9F7F2;
-            --primary: #15a97d;
+            /* MODIFICA 1: Sfondo leggermente più colorato (crema più caldo) */
+            --bg-base: #EFE5D5;
+            
+            --primary: #15a97d; /* Il verde principale */
             --primary-light: #e0f6ef;
             --accent: #E76F51;
             --text-dark: #264653;
@@ -32,7 +34,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2;
             overflow: hidden;
-            background: linear-gradient(180deg, #F9F7F2 0%, #fff 100%);
+            background: linear-gradient(180deg, var(--bg-base) 0%, #fff 100%);
         }
 
         .blob {
@@ -71,9 +73,7 @@
             padding-top: 40px;
         }
 
-        /* --- NUOVO STILE MASCOTTE "VIVA" --- */
-        
-        /* 1. Wrapper per il posizionamento fisso e il movimento del mouse (JS) */
+        /* --- STILE MASCOTTE "VIVA" --- */
         .buddy-wrapper {
             position: fixed;
             top: 25%;
@@ -81,17 +81,14 @@
             width: 280px;
             height: 280px;
             z-index: 1;
-            pointer-events: none; /* Permette di cliccare sotto */
-            /* Transizione fluida per il movimento JS */
+            pointer-events: none;
             transition: transform 0.1s ease-out; 
             will-change: transform;
         }
 
-        /* 2. Container interno per l'animazione di galleggiamento (CSS) */
         .mascot-container {
             width: 100%;
             height: 100%;
-            /* Nuova animazione più complessa */
             animation: mascotFloatAlive 7s ease-in-out infinite; 
         }
 
@@ -99,23 +96,20 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            /* Ombra pulsante */
             filter: drop-shadow(0 20px 30px rgba(21, 169, 125, 0.2)); 
             transition: all 0.3s ease;
         }
 
-        /* Reazione all'hover (quando il mouse passa sopra la zona) */
         .buddy-wrapper:hover .mascot-img {
             filter: drop-shadow(0 30px 50px rgba(21, 169, 125, 0.4));
             transform: scale(1.05);
         }
 
-        /* Nuova animazione "organica" */
         @keyframes mascotFloatAlive {
             0%   { transform: translateY(0px) rotate(0deg) scale(1); }
-            25%  { transform: translateY(-15px) rotate(-2deg) scale(1.02); } /* Sale, ruota sx, si allunga */
-            50%  { transform: translateY(-30px) rotate(0deg) scale(1.05); }  /* Apice, dritto, massimo allungamento */
-            75%  { transform: translateY(-15px) rotate(2deg) scale(1.02); }  /* Scende, ruota dx */
+            25%  { transform: translateY(-15px) rotate(-2deg) scale(1.02); }
+            50%  { transform: translateY(-30px) rotate(0deg) scale(1.05); }
+            75%  { transform: translateY(-15px) rotate(2deg) scale(1.02); }
             100% { transform: translateY(0px) rotate(0deg) scale(1); }
         }
 
@@ -174,9 +168,12 @@
 
         .value-pill:hover { transform: translateY(-3px); }
 
-        .val-mot { color: var(--accent); border-color: rgba(231, 111, 81, 0.2); }
-        .val-edu { color: var(--primary); border-color: rgba(21, 169, 125, 0.2); }
-        .val-con { color: var(--text-dark); border-color: rgba(38, 70, 83, 0.2); }
+        /* MODIFICA 2: TUTTE LE PILLOLE VERDI */
+        /* Ho unito i selettori per applicare lo stesso stile verde a tutti */
+        .val-mot, .val-edu, .val-con {
+            color: var(--primary); /* Verde principale */
+            border-color: rgba(21, 169, 125, 0.2); /* Bordo verde chiaro */
+        }
 
         .scroll-indicator {
             margin-top: 20px;
@@ -255,16 +252,14 @@
         .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* RESPONSIVE: SU SCHERMI PICCOLI IL BUDDY TORNA NORMALE */
         @media (max-width: 1300px) {
             .buddy-wrapper {
-                position: relative; /* Non più fisso */
+                position: relative;
                 top: auto; right: auto;
-                margin: 0 auto 30px auto; /* Centrato */
+                margin: 0 auto 30px auto;
                 width: 220px; height: 220px;
                 z-index: 1;
             }
-            /* Disattiva l'effetto mouse su mobile/tablet per performance */
             .buddy-wrapper { transform: none !important; }
             header { min-height: auto; padding-top: 60px; }
         }
@@ -408,13 +403,12 @@
         </main>
 
         <footer>
-            <p>&copy; 2025 Neuron Project – Politecnico di Milano</p>
+            <p>&copy; 2025 Helpmater Project – Politecnico di Milano</p>
         </footer>
 
     </div>
 
     <script>
-        // --- 1. Funzione Reveal allo scroll (già presente) ---
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
             for (var i = 0; i < reveals.length; i++) {
@@ -429,24 +423,14 @@
         window.addEventListener("scroll", reveal);
         reveal();
 
-        // --- 2. NUOVO: Script per far seguire il mouse alla mascotte ---
         document.addEventListener('mousemove', (e) => {
-            // Se siamo su schermi piccoli, non eseguire lo script (risparmia risorse)
             if (window.innerWidth <= 1300) return;
-
             const follower = document.querySelector('.js-mouse-follower');
             if (!follower) return;
-
-            // Calcola il centro dello schermo
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-
-            // Calcola la distanza del mouse dal centro
-            // Dividiamo per un numero alto (es. 50) per rendere il movimento sottile
             const moveX = (centerX - e.clientX) / 50;
             const moveY = (centerY - e.clientY) / 50;
-
-            // Applica lo spostamento inverso al wrapper della mascotte
             follower.style.transform = `translate(${moveX}px, ${moveY}px)`;
         });
     </script>
