@@ -4,17 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neuron | Repository HCI</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
-        /* --- PALETTE MATCHO SPACE --- */
         :root {
-            --bg-base: #F9F7F2;           /* Beige */
-            --primary: #15a97d;           /* Verde Smeraldo */
-            --primary-light: #e0f6ef;     /* Verde Chiaro */
-            --accent: #E76F51;            /* Corallo */
-            --text-dark: #264653;         /* Blu scuro */
+            --bg-base: #F9F7F2;
+            --primary: #15a97d;
+            --primary-light: #e0f6ef;
+            --accent: #E76F51;
+            --text-dark: #264653;
             --text-light: #666;
             --white: #FFFFFF;
         }
@@ -29,7 +27,6 @@
             line-height: 1.6;
         }
 
-        /* --- SFONDO NON MONOCROMATICO (Background Shapes) --- */
         .ambient-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -38,7 +35,6 @@
             background: linear-gradient(180deg, #F9F7F2 0%, #fff 100%);
         }
 
-        /* Forme sfumate sullo sfondo */
         .blob {
             position: absolute;
             border-radius: 50%;
@@ -46,23 +42,10 @@
             opacity: 0.6;
             animation: float 10s infinite ease-in-out;
         }
-        .blob-1 {
-            width: 500px; height: 500px;
-            background: var(--primary-light);
-            top: -10%; left: -10%;
-        }
-        .blob-2 {
-            width: 400px; height: 400px;
-            background: rgba(231, 111, 81, 0.15); /* Corallo leggero */
-            bottom: 10%; right: -5%;
-            animation-delay: 2s;
-        }
-        .blob-3 {
-            width: 300px; height: 300px;
-            background: rgba(21, 169, 125, 0.1); /* Verde leggero */
-            top: 40%; left: 30%;
-            animation-delay: 4s;
-        }
+
+        .blob-1 { width: 500px; height: 500px; background: var(--primary-light); top: -10%; left: -10%; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(231, 111, 81, 0.15); bottom: 10%; right: -5%; animation-delay: 2s; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(21, 169, 125, 0.1); top: 40%; left: 30%; animation-delay: 4s; }
 
         @keyframes float {
             0% { transform: translate(0, 0); }
@@ -70,16 +53,14 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* --- LAYOUT --- */
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* --- HEADER --- */
         header {
-            height: 90vh; /* Full screen intro */
+            height: 90vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -104,7 +85,7 @@
             font-size: 5rem;
             font-weight: 800;
             letter-spacing: -2px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -115,10 +96,38 @@
             color: var(--text-light);
             max-width: 600px;
             font-weight: 300;
+            margin-bottom: 30px;
         }
 
+        .values-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .value-pill {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 24px;
+            border-radius: 30px;
+            background: var(--white);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: transform 0.3s;
+        }
+
+        .value-pill:hover { transform: translateY(-3px); }
+
+        .val-mot { color: var(--accent); border-color: rgba(231, 111, 81, 0.2); }
+        .val-edu { color: var(--primary); border-color: rgba(21, 169, 125, 0.2); }
+        .val-con { color: var(--text-dark); border-color: rgba(38, 70, 83, 0.2); }
+
         .scroll-indicator {
-            margin-top: 60px;
+            margin-top: 20px;
             animation: bounce 2s infinite;
             color: var(--primary);
             font-size: 24px;
@@ -130,9 +139,8 @@
             60% {transform: translateY(-5px);}
         }
 
-        /* --- SEZIONI --- */
         section {
-            padding: 100px 0;
+            padding: 80px 0;
             position: relative;
         }
 
@@ -146,17 +154,41 @@
         .intro-text {
             text-align: center;
             font-size: 1.2rem;
-            max-width: 700px;
+            max-width: 750px;
             margin: 0 auto;
             color: #555;
+            line-height: 1.8;
         }
 
-        /* --- CARDS CONSEGNE (GRID WEB) --- */
-        .cards-grid {
+        .group-badge {
+            display: inline-block;
+            background: rgba(231, 111, 81, 0.1);
+            color: var(--accent);
+            font-weight: 800;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin: 0 4px;
+            border: 1px dashed rgba(231, 111, 81, 0.4);
+        }
+
+        .grid-6 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .final-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
             margin-top: 20px;
+        }
+        
+        .final-card-container {
+            width: 100%;
+            max-width: 700px;
         }
 
         .card {
@@ -173,7 +205,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 220px;
+            min-height: 240px;
         }
 
         .card::before {
@@ -191,12 +223,10 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.08);
         }
 
-        .card:hover::before {
-            transform: scaleX(1);
-        }
+        .card:hover::before { transform: scaleX(1); }
 
         .card-num {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 800;
             color: var(--primary-light);
             line-height: 1;
@@ -204,20 +234,10 @@
             transition: color 0.4s;
         }
         
-        .card:hover .card-num {
-            color: var(--matcha-light); /* Un po' più scuro all'hover */
-        }
+        .card:hover .card-num { color: #C8E6C9; }
 
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .card-desc {
-            font-size: 0.9rem;
-            color: #888;
-        }
+        .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; }
+        .card-desc { font-size: 0.95rem; color: #888; line-height: 1.4; }
 
         .card-arrow {
             align-self: flex-end;
@@ -229,20 +249,19 @@
             transition: all 0.4s;
         }
 
-        .card:hover .card-arrow {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        .card:hover .card-arrow { opacity: 1; transform: translateX(0); }
 
-        /* Special style for Final Presentation */
-        .card.highlight .card-num { color: rgba(231, 111, 81, 0.15); }
+        .card.highlight {
+            border: 2px solid rgba(231, 111, 81, 0.1);
+            background: linear-gradient(to bottom right, #fff, #fffcfb);
+        }
+        .card.highlight .card-num { color: rgba(231, 111, 81, 0.15); font-size: 4rem; }
         .card.highlight::before { background: var(--accent); }
         .card.highlight .card-arrow { color: var(--accent); }
 
-        /* --- TEAM --- */
         .team-box {
             background: var(--white);
-            border-radius: 100px; /* Pill shape */
+            border-radius: 100px;
             padding: 20px 40px;
             display: inline-flex;
             justify-content: center;
@@ -255,43 +274,25 @@
             transform: translateX(-50%);
         }
 
-        .team-member {
-            font-weight: 600;
-            color: var(--text-dark);
-            position: relative;
-        }
+        .team-member { font-weight: 600; color: var(--text-dark); position: relative; }
+        .team-member:not(:last-child)::after { content: '•'; margin-left: 20px; color: var(--primary); }
 
-        .team-member:not(:last-child)::after {
-            content: '•';
-            margin-left: 20px;
-            color: var(--primary);
-        }
+        footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
 
-        /* --- FOOTER --- */
-        footer {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-            font-size: 0.9rem;
-        }
-
-        /* --- ANIMAZIONI SCROLL (Scroll Reveal) --- */
         .reveal {
             opacity: 0;
             transform: translateY(50px);
             transition: all 0.8s ease-out;
         }
 
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* Mobile tweaks */
         @media (max-width: 768px) {
             h1 { font-size: 3.5rem; }
             .team-box { border-radius: 24px; flex-direction: column; gap: 5px; padding: 30px;}
             .team-member:not(:last-child)::after { content: ''; margin: 0; }
+            .values-container { flex-direction: column; gap: 10px; }
+            .final-card-container { max-width: 100%; }
         }
     </style>
 </head>
@@ -308,7 +309,14 @@
         <header>
             <div class="brand-tag reveal">HCI Repository 2025</div>
             <h1 class="reveal">Neuron</h1>
-            <p class="reveal">Un sistema integrato di supporto e orientamento universitario.</p>
+            <p class="reveal">Un sistema per il benessere quotidiano.</p>
+            
+            <div class="values-container reveal">
+                <div class="value-pill val-mot">Motivare</div>
+                <div class="value-pill val-edu">Educare</div>
+                <div class="value-pill val-con">Connettere</div>
+            </div>
+
             <div class="scroll-indicator reveal">↓</div>
         </header>
 
@@ -319,42 +327,84 @@
                     Questa repository raccoglie i materiali di progettazione e sviluppo per il corso di 
                     <strong>Fondamenti di Human–Computer Interaction</strong> presso il <strong>Politecnico di Milano</strong>.
                     <br><br>
-                    L'obiettivo è creare un ecosistema digitale che riduca lo stress accademico attraverso strumenti di supporto emotivo e organizzativo.
+                    Sviluppato dal gruppo <span class="group-badge">HelpMater</span>, l'obiettivo è creare un ecosistema digitale che riduca lo stress accademico attraverso strumenti di supporto emotivo e organizzativo.
                 </p>
             </section>
 
             <section class="reveal">
                 <h2>Roadmap & Materiali</h2>
-                <div class="cards-grid">
+                
+                <div class="grid-6">
                     
-                    <a href="C0/" class="card">
-                        <div class="card-num">01</div>
+                    <a href="C0/Consegna_0.pdf" target="_blank" class="card">
+                        <div class="card-num">00</div>
                         <div>
                             <div class="card-title">Consegna 0</div>
                             <div class="card-desc">Needfinding & Concept</div>
                         </div>
-                        <div class="card-arrow">Esplora ➔</div>
+                        <div class="card-arrow">Apri ➔</div>
                     </a>
 
-                    <a href="C1/" class="card">
-                        <div class="card-num">02</div>
+                    <a href="C1/NeedFinding.pdf" target="_blank" class="card">
+                        <div class="card-num">01</div>
                         <div>
                             <div class="card-title">Consegna 1</div>
                             <div class="card-desc">Low-Fi Prototyping & Evaluation</div>
                         </div>
-                        <div class="card-arrow">Esplora ➔</div>
+                        <div class="card-arrow">Apri ➔</div>
                     </a>
 
-                    <a href="presentazione-finale/" class="card highlight">
+                    <a href="C2/Refinement e Focus Group.pdf" target="_blank" class="card">
+                        <div class="card-num">02</div>
+                        <div>
+                            <div class="card-title">Consegna 2</div>
+                            <div class="card-desc">Refinement & Project Focus</div>
+                        </div>
+                        <div class="card-arrow">Apri ➔</div>
+                    </a>
+
+                    <a href="C3/Task, Storyboard e Primi Prototipi.pdf" target="_blank" class="card">
                         <div class="card-num">03</div>
                         <div>
-                            <div class="card-title">Finale</div>
-                            <div class="card-desc">High-Fi Prototype & Pitch</div>
+                            <div class="card-title">Consegna 3</div>
+                            <div class="card-desc">Task, Storyboard & Altri Prototipi</div>
                         </div>
-                        <div class="card-arrow">Guarda Presentazione ➔</div>
+                        <div class="card-arrow">Apri ➔</div>
+                    </a>
+
+                    <a href="C4/presentation.pdf" target="_blank" class="card">
+                        <div class="card-num">04</div>
+                        <div>
+                            <div class="card-title">Consegna 4</div>
+                            <div class="card-desc">Prototipi Medium-Fidelity</div>
+                        </div>
+                        <div class="card-arrow">Apri ➔</div>
+                    </a>
+
+                    <a href="C5/presentation.pdf" target="_blank" class="card">
+                        <div class="card-num">05</div>
+                        <div>
+                            <div class="card-title">Consegna 5</div>
+                            <div class="card-desc">Prototipo High-Fidelity & Usability Testing</div>
+                        </div>
+                        <div class="card-arrow">Apri ➔</div>
                     </a>
 
                 </div>
+
+                <div class="final-wrapper">
+                    <div class="final-card-container">
+                        <a href="presentazione-finale/HelpMater.pdf" target="_blank" class="card highlight">
+                            <div class="card-num">Finale</div>
+                            <div>
+                                <div class="card-title">Presentazione Finale</div>
+                                <div class="card-desc">High-Fi Prototype & Pitch</div>
+                            </div>
+                            <div class="card-arrow">Apri ➔</div>
+                        </a>
+                    </div>
+                </div>
+
             </section>
 
             <section class="reveal">
@@ -376,14 +426,13 @@
     </div>
 
     <script>
-        // Funzione semplice per attivare la classe .active quando l'elemento entra nello schermo
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
 
             for (var i = 0; i < reveals.length; i++) {
                 var windowHeight = window.innerHeight;
                 var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 150; // Distanza dal fondo per attivare
+                var elementVisible = 150; 
 
                 if (elementTop < windowHeight - elementVisible) {
                     reveals[i].classList.add("active");
@@ -392,8 +441,6 @@
         }
 
         window.addEventListener("scroll", reveal);
-        
-        // Attiva subito al caricamento per gli elementi già visibili (header)
         reveal();
     </script>
 
