@@ -30,7 +30,7 @@
         .ambient-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
+            z-index: -2; /* Abbassato per far spazio al buddy */
             overflow: hidden;
             background: linear-gradient(180deg, #F9F7F2 0%, #fff 100%);
         }
@@ -57,10 +57,12 @@
             max-width: 1100px;
             margin: 0 auto;
             padding: 0 20px;
+            position: relative;
+            z-index: 2; /* Il contenuto sta sopra tutto */
         }
 
         header {
-            min-height: 95vh;
+            min-height: 90vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -69,29 +71,29 @@
             padding-top: 40px;
         }
 
+        /* --- STILE MASCOTTE FLOTTANTE (FIXED) --- */
         .mascot-container {
-            width: 220px;
-            height: 220px;
-            margin-bottom: 20px;
-            position: relative;
+            position: fixed; /* Il trucco: fissa rispetto allo schermo */
+            top: 25%;        /* Altezza verticale */
+            right: 5%;       /* Distanza dal bordo destro */
+            width: 280px;    /* Dimensione */
+            height: 280px;
+            z-index: 1;      /* Sta tra lo sfondo e il contenuto */
+            pointer-events: none; /* Permette di cliccare attraverso l'immagine */
             animation: mascotFloat 6s ease-in-out infinite; 
+            transition: all 0.3s ease;
         }
 
         .mascot-img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 20px 30px rgba(21, 169, 125, 0.3)); 
-            transition: transform 0.3s ease;
-        }
-
-        .mascot-container:hover .mascot-img {
-            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 20px 30px rgba(21, 169, 125, 0.2)); 
         }
 
         @keyframes mascotFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-25px); }
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(2deg); }
         }
 
         .brand-tag {
@@ -165,27 +167,10 @@
             60% {transform: translateY(-5px);}
         }
 
-        section {
-            padding: 80px 0;
-            position: relative;
-        }
-
-        h2 {
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            text-align: center;
-            color: var(--text-dark);
-        }
-
-        .intro-text {
-            text-align: center;
-            font-size: 1.2rem;
-            max-width: 750px;
-            margin: 0 auto;
-            color: #555;
-            line-height: 1.8;
-        }
-
+        section { padding: 80px 0; position: relative; }
+        h2 { font-size: 2.5rem; margin-bottom: 40px; text-align: center; color: var(--text-dark); }
+        .intro-text { text-align: center; font-size: 1.2rem; max-width: 750px; margin: 0 auto; color: #555; line-height: 1.8; }
+        
         .group-badge {
             display: inline-block;
             background: rgba(231, 111, 81, 0.1);
@@ -205,130 +190,58 @@
             margin-bottom: 40px;
         }
 
-        .final-wrapper {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            margin-top: 20px;
-        }
-        
-        .final-card-container {
-            width: 100%;
-            max-width: 700px;
-        }
+        .final-wrapper { display: flex; justify-content: center; width: 100%; margin-top: 20px; }
+        .final-card-container { width: 100%; max-width: 700px; }
 
         .card {
-            background: var(--white);
-            padding: 40px;
-            border-radius: 24px;
-            text-decoration: none;
-            color: var(--text-dark);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.03);
+            background: var(--white); padding: 40px; border-radius: 24px; text-decoration: none; color: var(--text-dark);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03);
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 240px;
+            position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 240px;
         }
-
         .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 6px;
-            background: var(--primary);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s ease;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--primary);
+            transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
         }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-        }
-
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
         .card:hover::before { transform: scaleX(1); }
-
-        .card-num {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--primary-light);
-            line-height: 1;
-            margin-bottom: 10px;
-            transition: color 0.4s;
-        }
-        
+        .card-num { font-size: 3.5rem; font-weight: 800; color: var(--primary-light); line-height: 1; margin-bottom: 10px; transition: color 0.4s; }
         .card:hover .card-num { color: #C8E6C9; }
-
         .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; }
         .card-desc { font-size: 0.95rem; color: #888; line-height: 1.4; }
-
         .card-arrow {
-            align-self: flex-end;
-            margin-top: 20px;
-            font-weight: bold;
-            color: var(--primary);
-            opacity: 0;
-            transform: translateX(-10px);
-            transition: all 0.4s;
+            align-self: flex-end; margin-top: 20px; font-weight: bold; color: var(--primary); opacity: 0; transform: translateX(-10px); transition: all 0.4s;
         }
-
         .card:hover .card-arrow { opacity: 1; transform: translateX(0); }
 
-        .card.highlight {
-            border: 2px solid rgba(231, 111, 81, 0.1);
-            background: linear-gradient(to bottom right, #fff, #fffcfb);
-        }
+        .card.highlight { border: 2px solid rgba(231, 111, 81, 0.1); background: linear-gradient(to bottom right, #fff, #fffcfb); }
         .card.highlight .card-num { color: rgba(231, 111, 81, 0.15); font-size: 4rem; }
         .card.highlight::before { background: var(--accent); }
         .card.highlight .card-arrow { color: var(--accent); }
 
         .team-box {
-            background: var(--white);
-            border-radius: 100px;
-            padding: 20px 40px;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            flex-wrap: wrap;
-            gap: 20px;
-            position: relative;
-            left: 50%;
-            transform: translateX(-50%);
+            background: var(--white); border-radius: 100px; padding: 20px 40px; display: inline-flex; justify-content: center; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 20px; position: relative; left: 50%; transform: translateX(-50%);
         }
-
-        .team-member { 
-            font-weight: 600; 
-            color: var(--text-dark); 
-            position: relative; 
-            text-decoration: none; 
-            transition: color 0.2s;
-        }
-
-        .team-member:hover {
-            color: var(--primary);
-        }
-
-        .team-member:not(:last-child)::after { 
-            content: '•'; 
-            margin-left: 20px; 
-            color: var(--primary); 
-            display: inline-block; 
-            pointer-events: none; 
-        }
+        .team-member { font-weight: 600; color: var(--text-dark); position: relative; text-decoration: none; transition: color 0.2s; }
+        .team-member:hover { color: var(--primary); }
+        .team-member:not(:last-child)::after { content: '•'; margin-left: 20px; color: var(--primary); display: inline-block; pointer-events: none; }
 
         footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease-out;
-        }
-
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- RESPONSIVE: SU SCHERMI PICCOLI IL BUDDY NON DEVE COPRIRE IL TESTO --- */
+        @media (max-width: 1300px) {
+            .mascot-container {
+                position: relative; /* Torna a scorrere normalmente */
+                top: auto; right: auto;
+                margin: 0 auto 30px auto; /* Si centra */
+                width: 200px; height: 200px;
+                z-index: 1;
+            }
+            .header { min-height: auto; padding-top: 60px; }
+        }
 
         @media (max-width: 768px) {
             h1 { font-size: 3.5rem; }
@@ -341,6 +254,10 @@
 </head>
 <body>
 
+    <div class="mascot-container">
+        <img src="buddy.png" alt="Matcho Buddy" class="mascot-img">
+    </div>
+
     <div class="ambient-bg">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -350,10 +267,6 @@
     <div class="container">
         
         <header>
-            <div class="mascot-container reveal">
-                <img src="buddy.png" alt="Matcho Buddy" class="mascot-img">
-            </div>
-
             <div class="brand-tag reveal">HCI Repository 2025</div>
             <h1 class="reveal">Neuron</h1>
             <p class="reveal">Un sistema per il benessere quotidiano.</p>
@@ -475,18 +388,15 @@
     <script>
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
-
             for (var i = 0; i < reveals.length; i++) {
                 var windowHeight = window.innerHeight;
                 var elementTop = reveals[i].getBoundingClientRect().top;
                 var elementVisible = 150; 
-
                 if (elementTop < windowHeight - elementVisible) {
                     reveals[i].classList.add("active");
                 }
             }
         }
-
         window.addEventListener("scroll", reveal);
         reveal();
     </script>
