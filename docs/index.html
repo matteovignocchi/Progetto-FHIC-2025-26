@@ -265,10 +265,10 @@
         .avatar-circle {
             width: 160px;
             height: 160px;
-            /* MODIFICA FONDAMENTALE: Aggiunto padding */
-            padding: 15px; /* Crea spazio tra il bordo del cerchio e l'immagine */
+            /* MODIFICA FONDAMENTALE: Padding molto aumentato per rimpicciolire l'immagine */
+            padding: 30px; 
             border-radius: 50%;
-            background: var(--white); /* Lo sfondo bianco farà da cornice */
+            background: var(--white);
             overflow: hidden;
             box-shadow: 0 8px 20px rgba(0,0,0,0.05);
             border: 3px solid transparent;
@@ -281,7 +281,6 @@
         .avatar-img {
             width: 100%;
             height: 100%;
-            /* L'immagine ora si adatta allo spazio interno rimasto dopo il padding */
             object-fit: cover; 
         }
 
