@@ -60,12 +60,38 @@
         }
 
         header {
-            height: 90vh;
+            min-height: 95vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
+            padding-top: 40px;
+        }
+
+        .mascot-container {
+            width: 220px;
+            height: 220px;
+            margin-bottom: 20px;
+            position: relative;
+            animation: mascotFloat 6s ease-in-out infinite; 
+        }
+
+        .mascot-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 30px rgba(21, 169, 125, 0.3)); 
+            transition: transform 0.3s ease;
+        }
+
+        .mascot-container:hover .mascot-img {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        @keyframes mascotFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-25px); }
         }
 
         .brand-tag {
@@ -274,17 +300,16 @@
             transform: translateX(-50%);
         }
 
-        /* STILI PER I LINK DEL TEAM */
         .team-member { 
             font-weight: 600; 
             color: var(--text-dark); 
             position: relative; 
-            text-decoration: none; /* Toglie la sottolineatura standard */
+            text-decoration: none; 
             transition: color 0.2s;
         }
 
         .team-member:hover {
-            color: var(--primary); /* Colore verde quando ci passi sopra */
+            color: var(--primary);
         }
 
         .team-member:not(:last-child)::after { 
@@ -292,7 +317,7 @@
             margin-left: 20px; 
             color: var(--primary); 
             display: inline-block; 
-            pointer-events: none; /* Il pallino non è cliccabile */
+            pointer-events: none; 
         }
 
         footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
@@ -325,6 +350,10 @@
     <div class="container">
         
         <header>
+            <div class="mascot-container reveal">
+                <img src="buddy.png" alt="Matcho Buddy" class="mascot-img">
+            </div>
+
             <div class="brand-tag reveal">HCI Repository 2025</div>
             <h1 class="reveal">Neuron</h1>
             <p class="reveal">Un sistema per il benessere quotidiano.</p>
