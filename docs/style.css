@@ -1,255 +1,50 @@
-/* --- STYLE.CSS --- */
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HelpMater – Repository HCI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>HelpMater</h1>
+    <p><em>Un sistema integrato di supporto e orientamento universitario</em></p>
+  </header>
 
-:root {
-    /* PALETTE ORIGINALE MATCHO SPACE */
-    --bg-color: #F9F7F2;          /* Beige chiaro */
-    --primary-color: #15a97d;     /* Verde Smeraldo */
-    --primary-dark: #128f6a;      /* Verde più scuro per hover */
-    --primary-light: #e0f6ef;     /* Verde chiarissimo */
-    --accent-color: #E76F51;      /* Corallo/Arancio */
-    --text-color: #264653;        /* Blu/Verde scuro */
-    --card-bg: #FFFFFF;           /* Bianco */
-    --divider: #E0E0E0;
-    
-    /* STRUTTURA */
-    --radius-lg: 24px;
-    --radius-md: 16px;
-    --radius-sm: 12px;
-    --shadow-card: 0 8px 25px rgba(0,0,0,0.03);
-    --shadow-hover: 0 15px 35px rgba(0,0,0,0.08);
-    --container-width: 1100px;
-}
+  <main>
+    <!-- Sezione di presentazione -->
+    <section>
+      <h2>Presentazione</h2>
+      <p>
+        Questo sito raccoglie i materiali e le risorse del progetto <strong>HelpMater</strong>,
+        sviluppato per il corso di <em>Fondamenti di Human–Computer Interaction</em>
+        presso il <strong>Politecnico di Milano</strong>.
+      </p>
+      
+    </section>
 
-/* RESET E BASE */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+    <!-- Collegamenti principali -->
+    <section>
+      <h2>📂 Collegamenti ai materiali</h2>
+      <ul>
+        <li><a href="C0/">Consegna 0 </a></li>
+        <li><a href="C1/">Consegna 1 </a></li>
+        <li><a href="presentazione-finale/">Presentazione finale</a></li>
+      </ul>
+    </section>
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-}
+    <!-- Autori -->
+    <section>
+      <h2>📜 Autori</h2>
+      <p>
+        <strong>Team:</strong> Birtig, Massari, Nedina, Popovschii, Vignocchi
+      </p>
+    </section>
+  </main>
 
-a { text-decoration: none; color: inherit; transition: 0.2s; }
-ul { list-style: none; }
-
-/* LAYOUT */
-.container {
-    max-width: var(--container-width);
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-header {
-    padding: 20px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    font-weight: 800;
-    font-size: 24px;
-    color: var(--primary-color);
-    letter-spacing: -0.5px;
-}
-
-/* HERO SECTION (La parte alta) */
-.hero {
-    padding: 80px 0;
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.tag {
-    display: inline-block;
-    background: var(--primary-light);
-    color: var(--primary-color);
-    font-weight: 700;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-}
-
-h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 20px;
-    color: var(--text-color);
-}
-
-.hero p {
-    font-size: 1.25rem;
-    color: #555;
-    margin-bottom: 40px;
-}
-
-/* BOTTONI */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 28px;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: 0 4px 15px rgba(21, 169, 125, 0.4);
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-}
-
-.btn-secondary {
-    background-color: white;
-    color: var(--text-color);
-    border: 1px solid var(--divider);
-    margin-left: 10px;
-}
-
-.btn-secondary:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-/* VALUE PROPOSITION GRID */
-.section-title {
-    text-align: center;
-    margin: 80px 0 40px;
-}
-
-.section-title h2 { font-size: 2rem; font-weight: 700; }
-.section-title span { color: var(--accent-color); }
-
-.grid-3 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-bottom: 60px;
-}
-
-.card {
-    background: var(--card-bg);
-    padding: 30px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-card);
-    border: 1px solid rgba(0,0,0,0.02);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
-}
-
-.card-icon {
-    width: 50px;
-    height: 50px;
-    background: var(--primary-light);
-    color: var(--primary-color);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-.card h3 { margin-bottom: 10px; font-size: 1.2rem; }
-.card p { font-size: 0.95rem; color: #666; }
-
-/* SEZIONE CONSEGNE (DELIVERABLES) */
-.deliverables {
-    background: #FFF;
-    border-radius: var(--radius-lg);
-    padding: 40px;
-    box-shadow: var(--shadow-card);
-    margin-bottom: 80px;
-}
-
-.file-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.file-item {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border: 1px solid var(--divider);
-    border-radius: var(--radius-md);
-    transition: 0.2s;
-}
-
-.file-item:hover {
-    border-color: var(--primary-color);
-    background-color: #FAFAFA;
-}
-
-.file-icon { margin-right: 15px; font-size: 20px; }
-.file-info { flex: 1; }
-.file-name { font-weight: 600; display: block; }
-.file-desc { font-size: 12px; color: #999; }
-.download-arrow { font-weight: bold; color: var(--primary-color); }
-
-/* PHONE MOCKUP (Per mostrare l'app) */
-.mockup-container {
-    display: flex;
-    justify-content: center;
-    margin: 60px 0;
-}
-
-.phone-frame {
-    width: 300px;
-    height: 600px;
-    background: #333;
-    border-radius: 40px;
-    padding: 10px;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-    position: relative;
-}
-
-.phone-screen {
-    width: 100%;
-    height: 100%;
-    background: var(--bg-color); /* Lo stesso background dell'app */
-    border-radius: 32px;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-    font-size: 14px;
-    background-size: cover;
-    background-position: center;
-}
-
-/* FOOTER */
-footer {
-    text-align: center;
-    padding: 40px 0;
-    color: #888;
-    font-size: 14px;
-    border-top: 1px solid var(--divider);
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-    h1 { font-size: 2.5rem; }
-    .hero { padding: 40px 0; }
-}
+  <footer>
+    <p>© 2025 HelpMater Project – Politecnico di Milano</p>
+  </footer>
+</body>
+</html>
