@@ -30,7 +30,7 @@
         .ambient-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -2; /* Abbassato per far spazio al buddy */
+            z-index: -2;
             overflow: hidden;
             background: linear-gradient(180deg, #F9F7F2 0%, #fff 100%);
         }
@@ -58,7 +58,7 @@
             margin: 0 auto;
             padding: 0 20px;
             position: relative;
-            z-index: 2; /* Il contenuto sta sopra tutto */
+            z-index: 2;
         }
 
         header {
@@ -71,30 +71,54 @@
             padding-top: 40px;
         }
 
-        /* --- STILE MASCOTTE FLOTTANTE (FIXED) --- */
-        .mascot-container {
-            position: fixed; /* Il trucco: fissa rispetto allo schermo */
-            top: 25%;        /* Altezza verticale */
-            right: 5%;       /* Distanza dal bordo destro */
-            width: 280px;    /* Dimensione */
+        /* --- NUOVO STILE MASCOTTE "VIVA" --- */
+        
+        /* 1. Wrapper per il posizionamento fisso e il movimento del mouse (JS) */
+        .buddy-wrapper {
+            position: fixed;
+            top: 25%;
+            right: 5%;
+            width: 280px;
             height: 280px;
-            z-index: 1;      /* Sta tra lo sfondo e il contenuto */
-            pointer-events: none; /* Permette di cliccare attraverso l'immagine */
-            animation: mascotFloat 6s ease-in-out infinite; 
-            transition: all 0.3s ease;
+            z-index: 1;
+            pointer-events: none; /* Permette di cliccare sotto */
+            /* Transizione fluida per il movimento JS */
+            transition: transform 0.1s ease-out; 
+            will-change: transform;
+        }
+
+        /* 2. Container interno per l'animazione di galleggiamento (CSS) */
+        .mascot-container {
+            width: 100%;
+            height: 100%;
+            /* Nuova animazione più complessa */
+            animation: mascotFloatAlive 7s ease-in-out infinite; 
         }
 
         .mascot-img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            /* Ombra pulsante */
             filter: drop-shadow(0 20px 30px rgba(21, 169, 125, 0.2)); 
+            transition: all 0.3s ease;
         }
 
-        @keyframes mascotFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(2deg); }
+        /* Reazione all'hover (quando il mouse passa sopra la zona) */
+        .buddy-wrapper:hover .mascot-img {
+            filter: drop-shadow(0 30px 50px rgba(21, 169, 125, 0.4));
+            transform: scale(1.05);
         }
+
+        /* Nuova animazione "organica" */
+        @keyframes mascotFloatAlive {
+            0%   { transform: translateY(0px) rotate(0deg) scale(1); }
+            25%  { transform: translateY(-15px) rotate(-2deg) scale(1.02); } /* Sale, ruota sx, si allunga */
+            50%  { transform: translateY(-30px) rotate(0deg) scale(1.05); }  /* Apice, dritto, massimo allungamento */
+            75%  { transform: translateY(-15px) rotate(2deg) scale(1.02); }  /* Scende, ruota dx */
+            100% { transform: translateY(0px) rotate(0deg) scale(1); }
+        }
+
 
         .brand-tag {
             font-size: 14px;
@@ -231,16 +255,18 @@
         .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* --- RESPONSIVE: SU SCHERMI PICCOLI IL BUDDY NON DEVE COPRIRE IL TESTO --- */
+        /* RESPONSIVE: SU SCHERMI PICCOLI IL BUDDY TORNA NORMALE */
         @media (max-width: 1300px) {
-            .mascot-container {
-                position: relative; /* Torna a scorrere normalmente */
+            .buddy-wrapper {
+                position: relative; /* Non più fisso */
                 top: auto; right: auto;
-                margin: 0 auto 30px auto; /* Si centra */
-                width: 200px; height: 200px;
+                margin: 0 auto 30px auto; /* Centrato */
+                width: 220px; height: 220px;
                 z-index: 1;
             }
-            .header { min-height: auto; padding-top: 60px; }
+            /* Disattiva l'effetto mouse su mobile/tablet per performance */
+            .buddy-wrapper { transform: none !important; }
+            header { min-height: auto; padding-top: 60px; }
         }
 
         @media (max-width: 768px) {
@@ -254,8 +280,10 @@
 </head>
 <body>
 
-    <div class="mascot-container">
-        <img src="buddy.png" alt="Matcho Buddy" class="mascot-img">
+    <div class="buddy-wrapper js-mouse-follower">
+        <div class="mascot-container">
+            <img src="buddy.png" alt="Matcho Buddy" class="mascot-img">
+        </div>
     </div>
 
     <div class="ambient-bg">
@@ -342,64 +370,4 @@
                     </a>
 
                     <a href="C5/presentation.pdf" target="_blank" class="card">
-                        <div class="card-num">05</div>
-                        <div>
-                            <div class="card-title">Consegna 5</div>
-                            <div class="card-desc">Prototipo High-Fidelity & Usability Testing</div>
-                        </div>
-                        <div class="card-arrow">Apri ➔</div>
-                    </a>
-
-                </div>
-
-                <div class="final-wrapper">
-                    <div class="final-card-container">
-                        <a href="presentazione-finale/HelpMater.pdf" target="_blank" class="card highlight">
-                            <div class="card-num">Finale</div>
-                            <div>
-                                <div class="card-title">Presentazione Finale</div>
-                                <div class="card-desc">High-Fi Prototype & Pitch</div>
-                            </div>
-                            <div class="card-arrow">Apri ➔</div>
-                        </a>
-                    </div>
-                </div>
-
-            </section>
-
-            <section class="reveal">
-                <h2>Team</h2>
-                <div class="team-box">
-                    <a href="https://github.com/obviouslyme45" target="_blank" class="team-member">Birtig</a>
-                    <a href="https://github.com/tommaso-massari" target="_blank" class="team-member">Massari</a>
-                    <a href="https://github.com/Oleg-Nedina" target="_blank" class="team-member">Nedina</a>
-                    <a href="https://github.com/ilyapopovsky" target="_blank" class="team-member">Popovschii</a>
-                    <a href="https://github.com/matteovignocchi" target="_blank" class="team-member">Vignocchi</a>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>&copy; 2025 Neuron Project – Politecnico di Milano</p>
-        </footer>
-
-    </div>
-
-    <script>
-        function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 150; 
-                if (elementTop < windowHeight - elementVisible) {
-                    reveals[i].classList.add("active");
-                }
-            }
-        }
-        window.addEventListener("scroll", reveal);
-        reveal();
-    </script>
-
-</body>
-</html>
+                        <div
