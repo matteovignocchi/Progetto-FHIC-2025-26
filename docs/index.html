@@ -9,12 +9,12 @@
     <style>
         :root {
             /* PALETTE */
-            --bg-base: #F9F7F2;           
+            --bg-base: #F9F7F2;            
             --bg-gradient-end: #e8f5e9;   
-            --primary: #15a97d;           
+            --primary: #15a97d;            
             --primary-light: #e0f6ef;     
             --accent: #E76F51;            
-            --text-dark: #264653;         
+            --text-dark: #264653;          
             --text-light: #666;
             --white: #FFFFFF;
         }
@@ -212,12 +212,30 @@
         /* --- TEAM STYLE --- */
         .team-container { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 40px; }
         .team-card { display: flex; flex-direction: column; align-items: center; text-decoration: none; group: team-group; width: 180px; }
+        
         .avatar-circle {
-            width: 160px; height: 160px; padding: 30px; border-radius: 50%; background: var(--white); overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 3px solid transparent; transition: all 0.3s ease;
-            display: flex; justify-content: center; align-items: center;
+            width: 160px; 
+            height: 160px; 
+            /* MODIFICA 1: Ridotto padding per dare più spazio all'immagine */
+            padding: 10px; 
+            border-radius: 50%; 
+            background: var(--white); 
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05); 
+            border: 3px solid transparent; 
+            transition: all 0.3s ease;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
         }
-        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .avatar-img { 
+            width: 100%; 
+            height: 100%; 
+            /* MODIFICA 2: 'contain' mostra l'immagine intera senza tagli */
+            object-fit: contain; 
+        }
+        
         .team-name {
             margin-top: 15px; font-weight: 700; color: var(--text-dark); font-size: 1rem; text-align: center;
             line-height: 1.2; transition: color 0.3s ease;
