@@ -8,6 +8,7 @@
 
     <style>
         :root {
+            /* PALETTE */
             --bg-base: #F9F7F2;           
             --bg-gradient-end: #e8f5e9;   
             --primary: #15a97d;           
@@ -28,6 +29,7 @@
             line-height: 1.6;
         }
 
+        /* SFONDO */
         .ambient-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -72,7 +74,7 @@
             padding-top: 40px;
         }
 
-        /* --- STILE MASCOTTE HEADER --- */
+        /* --- STILE MASCOTTE --- */
         .buddy-wrapper {
             position: fixed;
             top: 25%;
@@ -157,6 +159,28 @@
             padding: 2px 10px; border-radius: 6px; font-size: 1rem; margin: 0 4px; border: 1px dashed rgba(231, 111, 81, 0.4);
         }
 
+        /* --- STILE PER IFRAME FIGMA --- */
+        .figma-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 24px;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.03);
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .figma-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 16px;
+        }
+
         .grid-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px; }
         .final-wrapper { display: flex; justify-content: center; width: 100%; margin-top: 20px; }
         .final-card-container { width: 100%; max-width: 700px; }
@@ -185,89 +209,37 @@
         .card.highlight::before { background: var(--accent); }
         .card.highlight .card-arrow { color: var(--accent); }
 
-        /* --- TEAM STYLE AGGIORNATO --- */
-        .team-container {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-
-        .team-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            group: team-group;
-            width: 180px; 
-        }
-
+        /* --- TEAM STYLE --- */
+        .team-container { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 40px; }
+        .team-card { display: flex; flex-direction: column; align-items: center; text-decoration: none; group: team-group; width: 180px; }
         .avatar-circle {
-            width: 160px;
-            height: 160px;
-            /* MODIFICA: PADDING ridotto leggermente per farle grandi, ma CONTAIN fa il resto */
-            padding: 10px; 
-            border-radius: 50%;
-            background: var(--white);
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            border: 3px solid transparent;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 160px; height: 160px; padding: 30px; border-radius: 50%; background: var(--white); overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 3px solid transparent; transition: all 0.3s ease;
+            display: flex; justify-content: center; align-items: center;
         }
-
-        .avatar-img {
-            width: 100%;
-            height: 100%;
-            /* MODIFICA FONDAMENTALE: CONTAIN invece di COVER */
-            /* Questo assicura che l'immagine si veda TUTTA, anche se è verticale */
-            object-fit: contain; 
-        }
-
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
         .team-name {
-            margin-top: 15px;
-            font-weight: 700;
-            color: var(--text-dark);
-            font-size: 1rem;
-            text-align: center;
-            line-height: 1.2;
-            transition: color 0.3s ease;
+            margin-top: 15px; font-weight: 700; color: var(--text-dark); font-size: 1rem; text-align: center;
+            line-height: 1.2; transition: color 0.3s ease;
         }
-
-        .team-card:hover .avatar-circle {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 15px 30px rgba(21, 169, 125, 0.3);
-        }
-
-        .team-card:hover .team-name {
-            color: var(--primary);
-        }
+        .team-card:hover .avatar-circle { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 15px 30px rgba(21, 169, 125, 0.3); }
+        .team-card:hover .team-name { color: var(--primary); }
 
         footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
         .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
         @media (max-width: 1300px) {
-            .buddy-wrapper {
-                position: relative;
-                top: auto; right: auto;
-                margin: 0 auto 30px auto;
-                width: 220px; height: 220px;
-                z-index: 1;
-            }
+            .buddy-wrapper { position: relative; top: auto; right: auto; margin: 0 auto 30px auto; width: 220px; height: 220px; z-index: 1; }
             .buddy-wrapper { transform: none !important; }
             header { min-height: auto; padding-top: 60px; }
         }
-
         @media (max-width: 768px) {
             h1 { font-size: 3.5rem; }
             .team-container { gap: 30px; }
             .values-container { flex-direction: column; gap: 10px; }
             .final-card-container { max-width: 100%; }
+            .figma-container { height: 450px; }
         }
     </style>
 </head>
@@ -275,7 +247,7 @@
 
     <div class="buddy-wrapper js-mouse-follower">
         <div class="mascot-container">
-            <img src="buddy.png" alt="Matcho Buddy" class="mascot-img">
+            <img src="buddy_trombabile.jpg" alt="Matcho Buddy" class="mascot-img">
         </div>
     </div>
 
@@ -310,6 +282,21 @@
                     <br><br>
                     Sviluppato dal gruppo <span class="group-badge">HelpMater</span>, l'obiettivo è creare un ecosistema digitale che riduca lo stress accademico attraverso strumenti di supporto emotivo e organizzativo.
                 </p>
+            </section>
+
+            <section class="reveal">
+                <h2>Prototipo Design</h2>
+                <p class="intro-text" style="margin-bottom: 30px;">
+                    Visualizza il prototipo
+                  interattivo direttamente da Figma.
+                </p>
+                <div class="figma-container">
+                    <iframe 
+                        class="figma-frame" 
+                        src="https://embed.figma.com/proto/bSApNTRwpjT5EaW3eLB70l/Prototipo_mid_fidelity?node-id=31-3&p=f&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=34%3A184&show-proto-sidebar=0&embed-host=share" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
             </section>
 
             <section class="reveal">
