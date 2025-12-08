@@ -8,12 +8,12 @@
 
     <style>
         :root {
-            --bg-base: #F9F7F2;           
+            --bg-base: #F9F7F2;            
             --bg-gradient-end: #e8f5e9;   
-            --primary: #15a97d;           
+            --primary: #15a97d;            
             --primary-light: #e0f6ef;     
             --accent: #E76F51;            
-            --text-dark: #264653;         
+            --text-dark: #264653;          
             --text-light: #666;
             --white: #FFFFFF;
         }
@@ -55,7 +55,7 @@
         }
 
         .container {
-            max-width: 900px; /* Un po' più stretto per questa pagina di dettaglio */
+            max-width: 900px; 
             margin: 0 auto;
             padding: 0 20px;
             position: relative;
@@ -63,7 +63,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Centra tutto verticalmente */
+            justify-content: center; 
         }
 
         header {
@@ -134,11 +134,6 @@
         }
         .card:hover .card-arrow { opacity: 1; transform: translateY(0); }
 
-        /* Stile speciale per Figma */
-        .card.figma { border: 2px solid rgba(231, 111, 81, 0.1); }
-        .card.figma::before { background: var(--accent); }
-        .card.figma .card-arrow { color: var(--accent); }
-
         /* Pulsante Back */
         .back-btn {
             display: inline-block;
@@ -165,23 +160,23 @@
         <header class="reveal">
             <div class="brand-tag">Neuron Repository</div>
             <h1>Consegna 4</h1>
-            <p>Scegli quale risorsa visualizzare</p>
+            <p>Documentazione Prototipi Medium-Fidelity</p>
         </header>
 
         <main class="reveal">
             <div class="selection-grid">
                 
-                <a href="https://www.figma.com/proto/bSApNTRwpjT5EaW3eLB70l/Prototipo_mid_fidelity?node-id=31-3&p=f&t=uQDYC5ygXpNLXwaH-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=34%3A184" target="_blank" class="card figma">
-                    <div class="card-icon">🎨</div>
-                    <div class="card-title">Prototipo Interattivo</div>
-                    <div class="card-desc">Naviga il prototipo Mid-Fidelity su Figma</div>
-                    <div class="card-arrow">Apri Prototipo ➔</div>
+                <a href="C4/Scelte_Design.pdf" target="_blank" class="card">
+                    <div class="card-icon">📐</div>
+                    <div class="card-title">Scelte di Design & Interazione</div>
+                    <div class="card-desc">Organizzazione contenuti, navigazione, griglie e flussi di dialogo.</div>
+                    <div class="card-arrow">Scarica PDF ➔</div>
                 </a>
 
-                <a href="C4/presentation.pdf" target="_blank" class="card">
-                    <div class="card-icon">📄</div>
-                    <div class="card-title">Reportage per valutatori esterni</div>
-                    <div class="card-desc">Leggi la documentazione completa</div>
+                <a href="C4/consegna4.pdf" target="_blank" class="card">
+                    <div class="card-icon">👥</div>
+                    <div class="card-title">Guida per Valutatori Esterni</div>
+                    <div class="card-desc">Protocollo e descrizione per i test di valutazione con utenti esterni.</div>
                     <div class="card-arrow">Scarica PDF ➔</div>
                 </a>
 
