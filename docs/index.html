@@ -159,7 +159,7 @@
             padding: 2px 10px; border-radius: 6px; font-size: 1rem; margin: 0 4px; border: 1px dashed rgba(231, 111, 81, 0.4);
         }
 
-        /* --- STILE PER IFRAME FIGMA --- */
+        /* --- CONTAINER PROTOTIPO (ex-figma) --- */
         .figma-container {
             width: 100%;
             max-width: 1000px;
@@ -181,9 +181,13 @@
             border-radius: 16px;
         }
 
-        .grid-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px; }
-        .final-wrapper { display: flex; justify-content: center; width: 100%; margin-top: 20px; }
-        .final-card-container { width: 100%; max-width: 700px; }
+        /* --- GRID 4x2 per roadmap --- */
+        .grid-6 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
 
         .card {
             background: var(--white); padding: 40px; border-radius: 24px; text-decoration: none; color: var(--text-dark);
@@ -250,12 +254,17 @@
             .buddy-wrapper { transform: none !important; }
             header { min-height: auto; padding-top: 60px; }
         }
+
+        @media (max-width: 1200px) {
+            .grid-6 { grid-template-columns: repeat(2, 1fr); }
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 3.5rem; }
             .team-container { gap: 30px; }
             .values-container { flex-direction: column; gap: 10px; }
-            .final-card-container { max-width: 100%; }
             .figma-container { height: 450px; }
+            .grid-6 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -303,13 +312,12 @@
             <section class="reveal">
                 <h2>Prototipo Design</h2>
                 <p class="intro-text" style="margin-bottom: 30px;">
-                    Visualizza il prototipo
-                  interattivo direttamente da Figma.
+                    Visualizza il prototipo finale interattivo direttamente dalla repository.
                 </p>
                 <div class="figma-container">
                     <iframe 
                         class="figma-frame" 
-                        src="https://embed.figma.com/proto/bSApNTRwpjT5EaW3eLB70l/Prototipo_mid_fidelity?node-id=31-3&p=f&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=34%3A184&show-proto-sidebar=0&embed-host=share" 
+                        src="C6/prototipo_finale_neuron_html/index.html"
                         allowfullscreen>
                     </iframe>
                 </div>
@@ -371,22 +379,29 @@
                             <div class="card-title">Consegna 5</div>
                             <div class="card-desc">Valutazione euristica progetto WildTribes</div>
                         </div>
-                        <div class="card-arrow">Apri </div>
+                        <div class="card-arrow">Apri ➔</div>
                     </a>
 
-                </div>
+                    <!-- CONSEGNA 6 -->
+                    <a href="C6/consegna6.html" class="card">
+                        <div class="card-num">06</div>
+                        <div>
+                            <div class="card-title">Consegna 6</div>
+                            <div class="card-desc">User Testing & Iterazione</div>
+                        </div>
+                        <div class="card-arrow">Apri ➔</div>
+                    </a>
 
-                <div class="final-wrapper">
-                    <div class="final-card-container">
-                        <a href="presentazione-finale/HelpMater.pdf" target="_blank" class="card highlight">
-                            <div class="card-num">Finale</div>
-                            <div>
-                                <div class="card-title">Presentazione Finale</div>
-                                <div class="card-desc">High-Fi Prototype & Pitch</div>
-                            </div>
-                            <div class="card-arrow">Apri ➔</div>
-                        </a>
-                    </div>
+                    <!-- FINALE -->
+                    <a href="presentazione-finale/HelpMater.pdf" target="_blank" class="card highlight">
+                        <div class="card-num">Finale</div>
+                        <div>
+                            <div class="card-title">Presentazione Finale</div>
+                            <div class="card-desc">High-Fi Prototype & Pitch</div>
+                        </div>
+                        <div class="card-arrow">Apri ➔</div>
+                    </a>
+
                 </div>
 
             </section>
