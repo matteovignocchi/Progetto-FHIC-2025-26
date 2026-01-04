@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuron | Consegna 6</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #F9F7F2;            
+            --bg-gradient-end: #e8f5e9;   
+            --primary: #15a97d;            
+            --primary-light: #e0f6ef;     
+            --accent: #E76F51;            
+            --text-dark: #264653;          
+            --text-light: #666;
+            --white: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-base);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-base) 40%, var(--bg-gradient-end) 100%);
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px); 
+            opacity: 0.65; 
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .blob-1 { width: 600px; height: 600px; background: var(--primary); top: -15%; left: -10%; opacity: 0.25; }
+        .blob-2 { width: 500px; height: 500px; background: var(--accent); bottom: 5%; right: -10%; animation-delay: 2s; opacity: 0.35; }
+        .blob-3 { width: 400px; height: 400px; background: var(--primary); top: 40%; left: 20%; animation-delay: 4s; opacity: 0.2; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(40px, -40px); } 
+            100% { transform: translate(0, 0); }
+        }
+
+        .container {
+            max-width: 900px; 
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .brand-tag {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 20px;
+            background: var(--white);
+            padding: 8px 16px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            font-weight: 300;
+        }
+
+        /* GRIGLIA PER I PULSANTI */
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: var(--white); padding: 40px; border-radius: 24px; text-decoration: none; color: var(--text-dark);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+            min-height: 250px;
+        }
+        
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--primary);
+            transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+        }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--primary-light); }
+        .card:hover::before { transform: scaleX(1); }
+
+        .card-icon { font-size: 4rem; margin-bottom: 20px; }
+        .card-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+        .card-desc { font-size: 1rem; color: #888; margin-bottom: 20px; }
+        
+        .card-arrow {
+            font-weight: bold; color: var(--primary); opacity: 0; transform: translateY(10px); transition: all 0.4s;
+        }
+        .card:hover .card-arrow { opacity: 1; transform: translateY(0); }
+
+        /* Evidenziazione soft per contenuti "finali" */
+        .card.highlight {
+            border: 2px solid rgba(231, 111, 81, 0.12);
+            background: linear-gradient(to bottom right, #fff, #fffcfb);
+        }
+        .card.highlight::before { background: var(--accent); }
+        .card.highlight .card-arrow { color: var(--accent); }
+
+        /* Pulsante Back */
+        .back-btn {
+            display: inline-block;
+            font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 12px 30px;
+            border-radius: 30px; background: var(--white); border: 1px solid rgba(0,0,0,0.05); color: var(--text-light);
+            text-decoration: none; transition: transform 0.3s, color 0.3s;
+        }
+        .back-btn:hover { transform: translateY(-3px); color: var(--text-dark); border-color: var(--primary); }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        
+        <header class="reveal">
+            <div class="brand-tag">Neuron Repository</div>
+            <h1>Consegna 6</h1>
+            <p>User Testing e Prototipo High-Fidelity</p>
+        </header>
+
+        <main class="reveal">
+            <div class="selection-grid">
+                
+                <!-- 1) Protocollo user testing -->
+                <a href="protocollo_user_testing.pdf" target="_blank" class="card">
+                    <div class="card-icon">🧪</div>
+                    <div class="card-title">Protocollo User Testing</div>
+                    <div class="card-desc">Script, compiti, criteri di osservazione e raccolta feedback per i test con utenti.</div>
+                    <div class="card-arrow">Apri PDF ➔</div>
+                </a>
+
+                <!-- 2) Presentazione finale user testing -->
+                <a href="report_finale_user_testing.pdf" target="_blank" class="card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Presentazione Risultati User Testing</div>
+                    <div class="card-desc">Insight principali, criticità emerse e decisioni di design derivate dai test.</div>
+                    <div class="card-arrow">Apri PDF ➔</div>
+                </a>
+
+                <!-- 3) Report revisione post euristica -->
+                <a href="post_euristica_revisione.pdf" target="_blank" class="card">
+                    <div class="card-icon">🛠️</div>
+                    <div class="card-title">Report “Patch & Polish”</div>
+                    <div class="card-desc">Revisione del prototipo per rispondere alle violazioni emerse dalla valutazione euristica.</div>
+                    <div class="card-arrow">Apri Report ➔</div>
+                </a>
+
+                <!-- 4) Link prototipo finale -->
+                <a href="prototipo_finale_neuron.html" class="card highlight">
+                    <div class="card-icon">✨</div>
+                    <div class="card-title">Prototipo Finale</div>
+                    <div class="card-desc">Accedi alla versione finale del prototipo (high-fi) dopo iterazioni e validazione.</div>
+                    <div class="card-arrow">Apri Prototipo ➔</div>
+                </a>
+
+            </div>
+
+            <div style="text-align: center;">
+                <a href="/Progetto-FHIC-2025-26/index.html" class="back-btn">← Torna alla Roadmap</a>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        window.addEventListener("load", () => {
+            const reveals = document.querySelectorAll(".reveal");
+            reveals.forEach(reveal => reveal.classList.add("active"));
+        });
+    </script>
+
+</body>
+</html>
