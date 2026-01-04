@@ -168,9 +168,19 @@
             padding: 14px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.03);
             border: 1px solid rgba(0,0,0,0.03);
-            height: 650px;
+            height: min(90vh, 900px);
             overflow: hidden;
             position: relative;
+           * CONTORNO */
+    border: 2px solid rgba(21, 169, 125, 0.25);
+
+    /* STACCO DALLO SFONDO */
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.08),
+        inset 0 0 0 1px rgba(255,255,255,0.6);
+
+    padding: 10px;
+    overflow: hidden;
         }
 
         .prototype-frame {
