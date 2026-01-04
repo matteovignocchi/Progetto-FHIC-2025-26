@@ -8,7 +8,6 @@
 
     <style>
         :root {
-            /* PALETTE */
             --bg-base: #F9F7F2;            
             --bg-gradient-end: #e8f5e9;   
             --primary: #15a97d;            
@@ -29,20 +28,19 @@
             line-height: 1.6;
         }
 
-        /* SFONDO */
+        /* BACKGROUND */
         .ambient-bg {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            inset: 0;
             z-index: -2;
-            overflow: hidden;
             background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-base) 40%, var(--bg-gradient-end) 100%);
         }
 
         .blob {
             position: absolute;
             border-radius: 50%;
-            filter: blur(90px); 
-            opacity: 0.65; 
+            filter: blur(90px);
+            opacity: 0.6;
             animation: float 10s infinite ease-in-out;
         }
 
@@ -51,13 +49,14 @@
         .blob-3 { width: 400px; height: 400px; background: var(--primary); top: 40%; left: 20%; animation-delay: 4s; opacity: 0.2; }
 
         @keyframes float {
-            0% { transform: translate(0, 0); }
-            50% { transform: translate(40px, -40px); } 
-            100% { transform: translate(0, 0); }
+            0% { transform: translate(0,0); }
+            50% { transform: translate(40px,-40px); }
+            100% { transform: translate(0,0); }
         }
 
+        /* CONTAINER PIÙ LARGO */
         .container {
-            max-width: 1100px;
+            max-width: 1280px;
             margin: 0 auto;
             padding: 0 20px;
             position: relative;
@@ -71,47 +70,6 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding-top: 40px;
-        }
-
-        /* --- STILE MASCOTTE --- */
-        .buddy-wrapper {
-            position: fixed;
-            top: 25%;
-            right: 5%;
-            width: 280px;
-            height: 280px;
-            z-index: 1;
-            pointer-events: none;
-            transition: transform 0.05s ease-out; 
-            will-change: transform;
-        }
-
-        .mascot-container {
-            width: 100%;
-            height: 100%;
-            animation: mascotFloatUltra 3s ease-in-out infinite; 
-        }
-
-        .mascot-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 25px 40px rgba(21, 169, 125, 0.3)); 
-            transition: all 0.3s ease;
-        }
-
-        .buddy-wrapper:hover .mascot-img {
-            filter: drop-shadow(0 40px 60px rgba(21, 169, 125, 0.6));
-            transform: scale(1.15);
-        }
-
-        @keyframes mascotFloatUltra {
-            0%   { transform: translateY(0px) rotate(0deg) scale(1); }
-            25%  { transform: translateY(-35px) rotate(-8deg) scale(1.05); } 
-            50%  { transform: translateY(-70px) rotate(0deg) scale(1.15); }  
-            75%  { transform: translateY(-35px) rotate(8deg) scale(1.05); } 
-            100% { transform: translateY(0px) rotate(0deg) scale(1); }
         }
 
         .brand-tag {
@@ -120,367 +78,242 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--primary);
-            margin-bottom: 20px;
             background: var(--white);
             padding: 8px 16px;
             border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
         }
 
         h1, h2 {
             font-weight: 800;
-            background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, var(--text-dark), var(--primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-align: center;
         }
 
-        h1 { font-size: 5rem; letter-spacing: -2px; margin-bottom: 10px; }
-        header p { font-size: 1.5rem; color: var(--text-light); max-width: 600px; font-weight: 300; margin-bottom: 30px; }
+        h1 { font-size: 5rem; }
+        header p { font-size: 1.5rem; color: var(--text-light); margin-bottom: 30px; }
 
-        .values-container { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }
+        .values-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
         .value-pill {
-            font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 10px 24px;
-            border-radius: 30px; background: var(--white); border: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.3s;
-        }
-        .value-pill:hover { transform: translateY(-3px); }
-        .val-mot, .val-edu, .val-con { color: var(--primary); border-color: rgba(21, 169, 125, 0.2); }
-
-        .scroll-indicator { margin-top: 20px; animation: bounce 2s infinite; color: var(--primary); font-size: 24px; }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
-
-        section { padding: 80px 0; position: relative; }
-        h2 { font-size: 2.5rem; margin-bottom: 40px; }
-        .intro-text { text-align: center; font-size: 1.2rem; max-width: 750px; margin: 0 auto; color: #555; line-height: 1.8; }
-        
-        .group-badge {
-            display: inline-block; background: rgba(231, 111, 81, 0.1); color: var(--accent); font-weight: 800;
-            padding: 2px 10px; border-radius: 6px; font-size: 1rem; margin: 0 4px; border: 1px dashed rgba(231, 111, 81, 0.4);
-        }
-
-        /* --- CONTAINER PROTOTIPO (ex-figma) --- */
-        .figma-container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 30px;
             background: var(--white);
-            border-radius: 24px;
-            padding: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.03);
-            height: 600px;
-            position: relative;
-            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+            color: var(--primary);
         }
 
-        .figma-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 16px;
-        }
+        section { padding: 80px 0; }
+        h2 { font-size: 2.5rem; text-align: center; margin-bottom: 40px; }
 
-        /* --- GRID 4x2 per roadmap --- */
+        /* GRIGLIA 4x2 – CARD PIÙ LARGHE */
         .grid-6 {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 30px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 22px;
             margin-bottom: 40px;
         }
 
         .card {
-            background: var(--white); padding: 40px; border-radius: 24px; text-decoration: none; color: var(--text-dark);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03);
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 240px;
+            background: var(--white);
+            padding: 34px 38px;
+            border-radius: 24px;
+            text-decoration: none;
+            color: var(--text-dark);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: all .35s ease;
+            position: relative;
+            min-height: 240px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--primary);
-            transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
-        }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--primary-light); }
-        .card:hover::before { transform: scaleX(1); }
-        .card-num { font-size: 3.5rem; font-weight: 800; color: var(--primary-light); line-height: 1; margin-bottom: 10px; transition: color 0.4s; }
-        .card:hover .card-num { color: #C8E6C9; }
-        .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; }
-        .card-desc { font-size: 0.95rem; color: #888; line-height: 1.4; }
-        .card-arrow { align-self: flex-end; margin-top: 20px; font-weight: bold; color: var(--primary); opacity: 0; transform: translateX(-10px); transition: all 0.4s; }
-        .card:hover .card-arrow { opacity: 1; transform: translateX(0); }
 
-        .card.highlight { border: 2px solid rgba(231, 111, 81, 0.1); background: linear-gradient(to bottom right, #fff, #fffcfb); }
-        .card.highlight .card-num { color: rgba(231, 111, 81, 0.15); font-size: 4rem; }
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            height: 6px;
+            width: 100%;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .35s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .card:hover::before { transform: scaleX(1); }
+
+        .card-num {
+            font-size: 3.6rem;
+            font-weight: 800;
+            color: var(--primary-light);
+        }
+
+        .card-title { font-size: 1.35rem; font-weight: 700; }
+        .card-desc { font-size: .95rem; color: #888; }
+
+        .card-arrow {
+            align-self: flex-end;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .card.highlight {
+            border: 2px solid rgba(231,111,81,0.15);
+            background: linear-gradient(to bottom right, #fff, #fffcfb);
+        }
+
         .card.highlight::before { background: var(--accent); }
+        .card.highlight .card-num {
+            color: rgba(231,111,81,0.2);
+            font-size: 4rem;
+        }
         .card.highlight .card-arrow { color: var(--accent); }
 
-        /* --- TEAM STYLE --- */
-        .team-container { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 40px; }
-        .team-card { display: flex; flex-direction: column; align-items: center; text-decoration: none; group: team-group; width: 180px; }
-        
-        .avatar-circle {
-            width: 160px; 
-            height: 160px; 
-            padding: 10px; 
-            border-radius: 50%; 
-            background: var(--white); 
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05); 
-            border: 3px solid transparent; 
-            transition: all 0.3s ease;
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-        }
-        
-        .avatar-img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: contain; 
-        }
-        
-        .team-name {
-            margin-top: 15px; font-weight: 700; color: var(--text-dark); font-size: 1rem; text-align: center;
-            line-height: 1.2; transition: color 0.3s ease;
-        }
-        .team-card:hover .avatar-circle { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 15px 30px rgba(21, 169, 125, 0.3); }
-        .team-card:hover .team-name { color: var(--primary); }
-
-        footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
-        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        @media (max-width: 1300px) {
-            .buddy-wrapper { position: relative; top: auto; right: auto; margin: 0 auto 30px auto; width: 220px; height: 220px; z-index: 1; }
-            .buddy-wrapper { transform: none !important; }
-            header { min-height: auto; padding-top: 60px; }
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: .9rem;
+            color: #999;
         }
 
+        /* RESPONSIVE */
         @media (max-width: 1200px) {
             .grid-6 { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 768px) {
             h1 { font-size: 3.5rem; }
-            .team-container { gap: 30px; }
-            .values-container { flex-direction: column; gap: 10px; }
-            .figma-container { height: 450px; }
             .grid-6 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
+
 <body>
 
-    <div class="buddy-wrapper js-mouse-follower">
-        <div class="mascot-container">
-            <img src="buddy1.png" alt="Matcho Buddy" class="mascot-img">
-        </div>
-    </div>
+<div class="ambient-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
 
-    <div class="ambient-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
+<div class="container">
 
-    <div class="container">
-        
-        <header>
-            <div class="brand-tag reveal">HCI - HelpMater - Repository 2025</div>
-            <h1 class="reveal">Neuron</h1>
-            <p class="reveal">Un sistema per il benessere quotidiano.</p>
-            
-            <div class="values-container reveal">
-                <div class="value-pill val-mot">Motivare</div>
-                <div class="value-pill val-edu">Educare</div>
-                <div class="value-pill val-con">Connettere</div>
+<header>
+    <div class="brand-tag">HCI – HelpMater – Repository 2025</div>
+    <h1>Neuron</h1>
+    <p>Un sistema per il benessere quotidiano.</p>
+
+    <div class="values-container">
+        <div class="value-pill">Motivare</div>
+        <div class="value-pill">Educare</div>
+        <div class="value-pill">Connettere</div>
+    </div>
+</header>
+
+<main>
+
+<section>
+    <h2>Roadmap & Materiali</h2>
+
+    <div class="grid-6">
+
+        <a href="C0/Consegna_0.pdf" class="card">
+            <div class="card-num">00</div>
+            <div>
+                <div class="card-title">Consegna 0</div>
+                <div class="card-desc">Needfinding & Concept</div>
             </div>
+            <div class="card-arrow">Apri ➔</div>
+        </a>
 
-            <div class="scroll-indicator reveal">↓</div>
-        </header>
+        <a href="C1/NeedFinding.pdf" class="card">
+            <div class="card-num">01</div>
+            <div>
+                <div class="card-title">Consegna 1</div>
+                <div class="card-desc">Low-Fi Prototyping</div>
+            </div>
+            <div class="card-arrow">Apri ➔</div>
+        </a>
 
-        <main>
-            <section class="reveal">
-                <h2>Il Progetto</h2>
-                <p class="intro-text">
-                    Questa repository raccoglie i materiali di progettazione e sviluppo per il corso di 
-                    <strong>Fondamenti di Human–Computer Interaction</strong> presso il <strong>Politecnico di Milano</strong>.
-                    <br><br>
-                    Sviluppato dal gruppo <span class="group-badge">HelpMater</span>, l'obiettivo è creare un ecosistema digitale che riduca lo stress accademico attraverso strumenti di supporto emotivo e organizzativo.
-                </p>
-            </section>
+        <a href="C2/Refinement e Focus Group.pdf" class="card">
+            <div class="card-num">02</div>
+            <div>
+                <div class="card-title">Consegna 2</div>
+                <div class="card-desc">Refinement & Focus</div>
+            </div>
+            <div class="card-arrow">Apri ➔</div>
+        </a>
 
-            <section class="reveal">
-                <h2>Prototipo Design</h2>
-                <p class="intro-text" style="margin-bottom: 30px;">
-                    Visualizza il prototipo finale interattivo direttamente dalla repository.
-                </p>
-                <div class="figma-container">
-                    <iframe 
-                        class="figma-frame" 
-                        src="C6/prototipo_finale_neuron_html"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            </section>
+        <a href="C3/Task, Storyboard e Primi Prototipi.pdf" class="card">
+            <div class="card-num">03</div>
+            <div>
+                <div class="card-title">Consegna 3</div>
+                <div class="card-desc">Task & Storyboard</div>
+            </div>
+            <div class="card-arrow">Apri ➔</div>
+        </a>
 
-            <section class="reveal">
-                <h2>Roadmap & Materiali</h2>
-                
-                <div class="grid-6">
-                    
-                    <a href="C0/Consegna_0.pdf" target="_blank" class="card">
-                        <div class="card-num">00</div>
-                        <div>
-                            <div class="card-title">Consegna 0</div>
-                            <div class="card-desc">Needfinding & Concept</div>
-                        </div>
-                        <div class="card-arrow">Apri ➔</div>
-                    </a>
+        <a href="C4/consegna4.html" class="card">
+            <div class="card-num">04</div>
+            <div>
+                <div class="card-title">Consegna 4</div>
+                <div class="card-desc">Medium-Fidelity</div>
+            </div>
+            <div class="card-arrow">Apri ➔</div>
+        </a>
 
-                    <a href="C1/NeedFinding.pdf" target="_blank" class="card">
-                        <div class="card-num">01</div>
-                        <div>
-                            <div class="card-title">Consegna 1</div>
-                            <div class="card-desc">Low-Fi Prototyping & Evaluation</div>
-                        </div>
-                        <div class="card-arrow">Apri ➔</div>
-                    </a>
+        <a href="C5/valutazione_euristica_wildtribes.pdf" class="card">
+            <div class="card-num">05</div>
+            <div>
+                <div class="card-title">Consegna 5</div>
+                <div class="card-desc">Valutazione Euristica</div>
+            </div>
+            <div class="card-arrow">Apri ➔</div>
+        </a>
 
-                    <a href="C2/Refinement e Focus Group.pdf" target="_blank" class="card">
-                        <div class="card-num">02</div>
-                        <div>
-                            <div class="card-title">Consegna 2</div>
-                            <div class="card-desc">Refinement & Project Focus</div>
-                        </div>
-                        <div class="card-arrow">Apri ➔</div>
-                    </a>
+        <a href="C6/consegna6.html" class="card">
+            <div class="card-num">06</div>
+            <div>
+                <div class="card-title">Consegna 6</div>
+                <div class="card-desc">User Testing & Iterazione</div>
+            </div>
+            <div class="card-arrow">Apri ➔</div>
+        </a>
 
-                    <a href="C3/Task, Storyboard e Primi Prototipi.pdf" target="_blank" class="card">
-                        <div class="card-num">03</div>
-                        <div>
-                            <div class="card-title">Consegna 3</div>
-                            <div class="card-desc">Task, Storyboard & Altri Prototipi</div>
-                        </div>
-                        <div class="card-arrow">Apri ➔</div>
-                    </a>
-
-                    <a href="C4/consegna4.html" class="card">
-                        <div class="card-num">04</div>
-                        <div>
-                            <div class="card-title">Consegna 4</div>
-                            <div class="card-desc">Prototipi Medium-Fidelity</div>
-                        </div>
-                        <div class="card-arrow">Apri ➔</div>
-                    </a>
-
-                    <a href="C5/valutazione_euristica_wildtribes.pdf" target="_blank" class="card"> 
-                        <div class="card-num">05</div>
-                        <div>
-                            <div class="card-title">Consegna 5</div>
-                            <div class="card-desc">Valutazione euristica progetto WildTribes</div>
-                        </div>
-                        <div class="card-arrow">Apri ➔</div>
-                    </a>
-
-                    <!-- CONSEGNA 6 -->
-                    <a href="C6/consegna6.html" class="card">
-                        <div class="card-num">06</div>
-                        <div>
-                            <div class="card-title">Consegna 6</div>
-                            <div class="card-desc">User Testing & Iterazione</div>
-                        </div>
-                        <div class="card-arrow">Apri ➔</div>
-                    </a>
-
-                    <!-- FINALE -->
-                    <a href="presentazione-finale/HelpMater.pdf" target="_blank" class="card highlight">
-                        <div class="card-num">Finale</div>
-                        <div>
-                            <div class="card-title">Presentazione Finale</div>
-                            <div class="card-desc">High-Fi Prototype & Pitch</div>
-                        </div>
-                        <div class="card-arrow">Apri ➔</div>
-                    </a>
-
-                </div>
-
-            </section>
-
-            <section class="reveal">
-                <h2>Team</h2>
-                <div class="team-container">
-                    
-                    <a href="https://github.com/obviouslyme45" target="_blank" class="team-card">
-                        <div class="avatar-circle">
-                            <img src="pim.webp" class="avatar-img" alt="Andrea Birtig">
-                        </div>
-                        <span class="team-name">Andrea Birtig</span>
-                    </a>
-
-                    <a href="https://github.com/tommaso-massari" target="_blank" class="team-card">
-                        <div class="avatar-circle">
-                            <img src="charlie.webp" class="avatar-img" alt="Tommaso Massari">
-                        </div>
-                        <span class="team-name">Tommaso Massari</span>
-                    </a>
-
-                    <a href="https://github.com/Oleg-Nedina" target="_blank" class="team-card">
-                        <div class="avatar-circle">
-                            <img src="MrBoss.webp" class="avatar-img" alt="Oleg Nedina">
-                        </div>
-                        <span class="team-name">Oleg Nedina</span>
-                    </a>
-
-                    <a href="https://github.com/ilyapopovsky" target="_blank" class="team-card">
-                        <div class="avatar-circle">
-                            <img src="allan.webp" class="avatar-img" alt="Ilia Popovschii">
-                        </div>
-                        <span class="team-name">Ilia Popovschii</span>
-                    </a>
-
-                    <a href="https://github.com/matteovignocchi" target="_blank" class="team-card">
-                        <div class="avatar-circle">
-                            <img src="glep.webp" class="avatar-img" alt="Matteo Vignocchi">
-                        </div>
-                        <span class="team-name">Matteo Vignocchi</span>
-                    </a>
-
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>&copy; 2025 HelpMater Project – Politecnico di Milano</p>
-        </footer>
+        <a href="presentazione-finale/HelpMater.pdf" class="card highlight">
+            <div class="card-num">Finale</div>
+            <div>
+                <div class="card-title">Presentazione Finale</div>
+                <div class="card-desc">High-Fi Prototype & Pitch</div>
+            </div>
+            <div class="card-arrow">Apri ➔</div>
+        </a>
 
     </div>
+</section>
 
-    <script>
-        function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 150; 
-                if (elementTop < windowHeight - elementVisible) {
-                    reveals[i].classList.add("active");
-                }
-            }
-        }
-        window.addEventListener("scroll", reveal);
-        reveal();
+</main>
 
-        document.addEventListener('mousemove', (e) => {
-            if (window.innerWidth <= 1300) return;
-            const follower = document.querySelector('.js-mouse-follower');
-            if (!follower) return;
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-            const moveX = (centerX - e.clientX) / 15;
-            const moveY = (centerY - e.clientY) / 15;
-            follower.style.transform = `translate(${moveX}px, ${moveY}px)`;
-        });
-    </script>
+<footer>
+    <p>&copy; 2025 HelpMater Project – Politecnico di Milano</p>
+</footer>
 
+</div>
 </body>
 </html>
