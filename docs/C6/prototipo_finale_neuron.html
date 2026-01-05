@@ -111,7 +111,8 @@
     .msg-bubble { max-width: 80%; padding: 12px 16px; border-radius: 20px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .msg-neuron { background: white; border-bottom-left-radius: 4px; align-self: flex-start; }
     .msg-user { background: #10b981; color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
-
+    
+    /* Stile per le card dentro la chat */
     .chat-card-container {
       width: 85%;
       background: white;
@@ -125,7 +126,7 @@
       border-bottom-left-radius: 4px;
     }
     .chat-card-container:active { transform: scale(0.98); }
-
+    
     .buddy-float { animation: float 3.5s ease-in-out infinite; }
     @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
 
@@ -152,7 +153,11 @@
     }
     .filter-chip.inactive:hover { border-color: #10b981; color: #10b981; }
 
-    .chip-small { padding: 7px 11px !important; font-size: 11px !important; }
+    /* Chip ridotti per eventi */
+    .chip-small {
+      padding: 7px 11px !important; 
+      font-size: 11px !important;
+    }
 
     .filters-row {
       display: flex;
@@ -176,6 +181,7 @@
     }
     .lib-list-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); }
 
+    /* ✅ Profile UI */
     .profile-card {
       background: white;
       border-radius: 28px;
@@ -199,6 +205,7 @@
       color: #6b7280;
     }
 
+    /* Typography */
     :root{
       --fs-xxs: 10px; --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px;
       --fs-lg: 18px; --fs-xl: 22px; --fs-2xl: 28px;
@@ -215,6 +222,7 @@
     #article-content, #event-content{ font-size: var(--fs-sm); line-height: 1.6; }
     .filter-chip{ font-size: var(--fs-md); }
 
+    /* Leaflet */
     .leaflet-container { font-family: 'Inter', sans-serif; }
     .leaflet-control-attribution { display: none; }
     .leaflet-control-zoom {
@@ -235,8 +243,10 @@
       border-radius: 30px; overflow: hidden;
       box-shadow: 0 18px 40px rgba(0,0,0,0.12);
     }
-
-    /* Fake Mobile Keyboard */
+  
+    /* =========================
+       Fake Mobile Keyboard (Home "Scrivi qui")
+       ========================= */
     .mobile-kb{
       position:absolute;
       left:0; right:0; bottom:0;
@@ -302,7 +312,10 @@
       font-weight: 900;
       color:#6b7280;
     }
+    .kb-spacer{ height: 10px; }
 
+  
+    /* Buddy customizer */
     .buddy-tile{
       background:#ffffff;
       border-radius: 22px;
@@ -334,7 +347,7 @@
       justify-content:center;
       border: 1px solid rgba(0,0,0,0.05);
     }
-  </style>
+</style>
 </head>
 
 <body>
@@ -708,6 +721,10 @@
     </div>
   </div>
 
+  
+  <!-- =========================
+       Buddy Customizer (apre SOLO dalla chat cliccando il buddy)
+       ========================= -->
   <div id="buddy-customizer-screen" class="slide-screen bg-[#f8f7f2]">
     <div class="px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between shadow-sm z-10">
       <div class="flex items-center gap-3 min-w-0">
@@ -747,6 +764,7 @@
           </p>
         </div>
 
+
         <div class="mt-2">
           <p class="t-xs font-extrabold text-gray-500 tracking-widest mb-2">SCEGLI UNO STILE</p>
           <div id="buddy-grid" class="grid grid-cols-3 gap-3"></div>
@@ -769,7 +787,7 @@
     </div>
   </div>
 
-  <div class="nav-bar" id="main-nav">
+<div class="nav-bar" id="main-nav">
     <div onclick="switchScreen('dashboard')" id="nav-btn-dashboard" class="cursor-pointer transition-all duration-200">
       <div class="w-10 h-10 bg-[#10b981] rounded-lg flex items-center justify-center text-white shadow-lg shadow-emerald-200">
         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -795,6 +813,10 @@
     </div>
   </div>
 
+
+  <!-- =========================
+       Fake Mobile Keyboard (Home input)
+       ========================= -->
   <div id="mobile-keyboard" class="mobile-kb" aria-hidden="true">
     <div class="mobile-kb-topbar">
       <div class="hint">Tastiera</div>
@@ -850,14 +872,6 @@
 
 <script>
   // =========================
-  // Helper: chiude tastiera se aperta (FIX "schermata rotta")
-  // =========================
-  function closeKeyboardIfOpen() {
-    const kb = document.getElementById('mobile-keyboard');
-    if (kb && kb.classList.contains('active')) closeMobileKeyboard();
-  }
-
-  // =========================
   // Articoli
   // =========================
   const articlesData = [
@@ -898,6 +912,7 @@
 
   // =========================
   // Events
+  // (filtri sopra mappa, marker show/hide)
   // =========================
   const eventsData = [
     {
@@ -956,11 +971,12 @@
     }
   ];
 
+  // ✅ Nuova variabile unica per il filtro eventi
   let activeEventFilter = 'Tutti';
   let currentEventId = null;
 
   let eventsMap = null;
-  const eventsMarkers = new Map();
+  const eventsMarkers = new Map(); // id -> marker
 
   // =========================
   // Tasks
@@ -973,7 +989,7 @@
   let taskToDeleteId = null;
 
   // =========================
-  // Profile
+  // Profile state (persistente)
   // =========================
   const PROFILE_KEY = "neuron_profile_v1";
   let profile = {
@@ -986,22 +1002,147 @@
   };
 
   // =========================
-  // Buddy
+  // Buddy (customizer)
   // =========================
   const BUDDY_KEY = "neuron_buddy_v1";
   let buddyState = { selectedId: "buddy1", name: "Neuron" };
 
   const buddyPresets = [
-    { id: "buddy1", label: "Buddy 1", img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy1.png" },
-    { id: "buddy2", label: "Buddy 2", img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy2.png" },
-    { id: "buddy3", label: "Buddy 3", img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy3.png" },
-    { id: "buddy4", label: "Buddy 4", img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy4.png" },
-    { id: "buddy5", label: "Buddy 5", img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy5.png" },
-    { id: "buddy6", label: "Buddy 6", img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy6.png" }
-  ];
+  {
+    id: "buddy1",
+    label: "Buddy 1",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy1.png"
+  },
+  {
+    id: "buddy2",
+    label: "Buddy 2",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy2.png"
+  },
+  {
+    id: "buddy3",
+    label: "Buddy 3",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy3.png"
+  },
+  {
+    id: "buddy4",
+    label: "Buddy 4",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy4.png"
+  },
+  {
+    id: "buddy5",
+    label: "Buddy 5",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy5.png"
+  },
+  {
+    id: "buddy6",
+    label: "Buddy 6",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy6.png"
+  }
+];
+
+  function svgToDataUri(svg) {
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+
+  function loadBuddy() {
+    try {
+      const raw = localStorage.getItem(BUDDY_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      buddyState = { ...buddyState, ...parsed };
+    } catch (_) {}
+  }
+
+  function applyBuddyToUI() {
+  let selected = buddyPresets.find(b => b.id === buddyState.selectedId);
+  if (!selected) {
+    selected = buddyPresets[0];
+    buddyState.selectedId = selected.id; // normalizza eventuali vecchi valori salvati
+  }
+
+  const src = selected.img;
+
+  const dash = document.getElementById("buddy-img-dashboard");
+  const chat = document.getElementById("buddy-img-chat");
+  const prev = document.getElementById("buddy-preview-img");
+
+  if (dash) dash.src = src;
+  if (chat) chat.src = src;
+  if (prev) prev.src = src;
+
+  // Nome Buddy (dashboard + chat)
+  const nDash = document.getElementById("buddy-name-dashboard");
+  const nChat = document.getElementById("buddy-name-chat");
+  const safeName = (buddyState.name || "Neuron").trim() || "Neuron";
+  if (nDash) nDash.innerText = safeName;
+  if (nChat) nChat.innerText = safeName;
+}
+
+  function renderBuddyGrid() {
+  const grid = document.getElementById("buddy-grid");
+  if (!grid) return;
+
+  grid.innerHTML = buddyPresets.map(b => {
+    const sel = (b.id === buddyState.selectedId);
+    return `
+      <div class="buddy-tile ${sel ? "selected" : ""}" onclick="selectBuddy('${b.id}')">
+        <div class="buddy-thumb">
+          <img src="${b.img}" alt="${escapeHtml(b.label)}" class="w-full h-full object-cover" />
+        </div>
+        <div class="t-xxs font-extrabold text-gray-500 tracking-widest uppercase">${escapeHtml(b.label)}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+  function selectBuddy(id) {
+    buddyState.selectedId = id;
+    applyBuddyToUI();
+    renderBuddyGrid();
+  }
+
+  function openBuddyCustomizer(show) {
+    const el = document.getElementById("buddy-customizer-screen");
+    if (!el) return;
+    el.classList.toggle("active", show);
+
+    if (show) {
+      // valorizza input nome
+      const nameInput = document.getElementById("buddy-name-input");
+      if (nameInput) nameInput.value = (buddyState.name || "Neuron").trim() || "Neuron";
+
+      renderBuddyGrid();
+      applyBuddyToUI();
+    }
+  }
+
+  function saveBuddySelection() {
+    const nameInput = document.getElementById("buddy-name-input");
+    buddyState.name = (nameInput?.value || buddyState.name || "Neuron").trim() || "Neuron";
+
+    localStorage.setItem(BUDDY_KEY, JSON.stringify(buddyState));
+    applyBuddyToUI();
+
+    const msg = document.getElementById("buddy-saved-msg");
+    if (msg) {
+      msg.classList.remove("opacity-0");
+      msg.classList.add("opacity-100");
+      clearTimeout(window.__buddySavedTimer);
+      window.__buddySavedTimer = setTimeout(() => {
+        msg.classList.remove("opacity-100");
+        msg.classList.add("opacity-0");
+      }, 1700);
+    }
+  }
+
+  function updateBuddyNamePreview(val) {
+    buddyState.name = (val || "").trim() || "Neuron";
+    applyBuddyToUI();
+  }
+
 
   // =========================
-  // Chatbot DB
+  // Chatbot Database (+200 Messages)
   // =========================
   const botDatabase = {
     greetings: [
@@ -1017,6 +1158,7 @@
       "Ciao! Facciamo due chiacchiere? Sono tutto orecchi."
     ],
     tips: [
+      // 50 consigli generali
       "Ricordati di bere un bicchiere d'acqua ora 💧",
       "Fai un respiro profondo: inspira 4 secondi, trattieni 4, espira 6.",
       "Staccare lo sguardo dallo schermo per 20 secondi aiuta gli occhi.",
@@ -1114,9 +1256,6 @@
     }
   };
 
-  // =========================
-  // Init
-  // =========================
   document.addEventListener('DOMContentLoaded', () => {
     loadProfile();
     applyProfileToUI();
@@ -1131,13 +1270,11 @@
     renderArticles();
     renderLibrary();
 
-    renderEventsSection();
+    renderEventsSection(); // ✅ nuovo layout eventi
+
     initSwipeNav();
   });
 
-  // =========================
-  // Profile
-  // =========================
   function loadProfile() {
     try {
       const raw = localStorage.getItem(PROFILE_KEY);
@@ -1162,7 +1299,6 @@
   }
 
   function openProfile(show) {
-    closeKeyboardIfOpen(); // ✅ FIX
     const el = document.getElementById("profile-screen");
     el.classList.toggle("active", show);
     if (show) applyProfileToUI();
@@ -1190,103 +1326,6 @@
         msg.classList.add("opacity-0");
       }, 2000);
     }
-  }
-
-  // =========================
-  // Buddy
-  // =========================
-  function loadBuddy() {
-    try {
-      const raw = localStorage.getItem(BUDDY_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      buddyState = { ...buddyState, ...parsed };
-    } catch (_) {}
-  }
-
-  function applyBuddyToUI() {
-    let selected = buddyPresets.find(b => b.id === buddyState.selectedId);
-    if (!selected) {
-      selected = buddyPresets[0];
-      buddyState.selectedId = selected.id;
-    }
-
-    const src = selected.img;
-
-    const dash = document.getElementById("buddy-img-dashboard");
-    const chat = document.getElementById("buddy-img-chat");
-    const prev = document.getElementById("buddy-preview-img");
-
-    if (dash) dash.src = src;
-    if (chat) chat.src = src;
-    if (prev) prev.src = src;
-
-    const nDash = document.getElementById("buddy-name-dashboard");
-    const nChat = document.getElementById("buddy-name-chat");
-    const safeName = (buddyState.name || "Neuron").trim() || "Neuron";
-    if (nDash) nDash.innerText = safeName;
-    if (nChat) nChat.innerText = safeName;
-  }
-
-  function renderBuddyGrid() {
-    const grid = document.getElementById("buddy-grid");
-    if (!grid) return;
-
-    grid.innerHTML = buddyPresets.map(b => {
-      const sel = (b.id === buddyState.selectedId);
-      return `
-        <div class="buddy-tile ${sel ? "selected" : ""}" onclick="selectBuddy('${b.id}')">
-          <div class="buddy-thumb">
-            <img src="${b.img}" alt="${escapeHtml(b.label)}" class="w-full h-full object-cover" />
-          </div>
-          <div class="t-xxs font-extrabold text-gray-500 tracking-widest uppercase">${escapeHtml(b.label)}</div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  function selectBuddy(id) {
-    buddyState.selectedId = id;
-    applyBuddyToUI();
-    renderBuddyGrid();
-  }
-
-  function openBuddyCustomizer(show) {
-    closeKeyboardIfOpen(); // ✅ FIX
-    const el = document.getElementById("buddy-customizer-screen");
-    if (!el) return;
-    el.classList.toggle("active", show);
-
-    if (show) {
-      const nameInput = document.getElementById("buddy-name-input");
-      if (nameInput) nameInput.value = (buddyState.name || "Neuron").trim() || "Neuron";
-      renderBuddyGrid();
-      applyBuddyToUI();
-    }
-  }
-
-  function saveBuddySelection() {
-    const nameInput = document.getElementById("buddy-name-input");
-    buddyState.name = (nameInput?.value || buddyState.name || "Neuron").trim() || "Neuron";
-
-    localStorage.setItem(BUDDY_KEY, JSON.stringify(buddyState));
-    applyBuddyToUI();
-
-    const msg = document.getElementById("buddy-saved-msg");
-    if (msg) {
-      msg.classList.remove("opacity-0");
-      msg.classList.add("opacity-100");
-      clearTimeout(window.__buddySavedTimer);
-      window.__buddySavedTimer = setTimeout(() => {
-        msg.classList.remove("opacity-100");
-        msg.classList.add("opacity-0");
-      }, 1700);
-    }
-  }
-
-  function updateBuddyNamePreview(val) {
-    buddyState.name = (val || "").trim() || "Neuron";
-    applyBuddyToUI();
   }
 
   // =========================
@@ -1319,7 +1358,6 @@
   }
 
   function switchScreen(screenName) {
-    closeKeyboardIfOpen(); // ✅ FIX
     document.querySelectorAll('.screen-content').forEach(el => {
       el.style.display = '';
       el.style.opacity = '';
@@ -1340,10 +1378,9 @@
   }
 
   // =========================
-  // Articles
+  // Articles: detail + save
   // =========================
   function openArticle(id) {
-    closeKeyboardIfOpen(); // ✅ FIX
     const item = articlesData.find(a => a.id === id);
     if (!item) return;
     currentArticleId = id;
@@ -1368,7 +1405,6 @@
   }
 
   function closeArticle() {
-    closeKeyboardIfOpen(); // ✅ FIX
     document.getElementById('article-screen').classList.remove('active');
     currentArticleId = null;
   }
@@ -1393,10 +1429,9 @@
   }
 
   // =========================
-  // Events
+  // Events: detail + join/unjoin
   // =========================
   function openEvent(id) {
-    closeKeyboardIfOpen(); // ✅ FIX
     const ev = eventsData.find(e => e.id === id);
     if (!ev) return;
     currentEventId = id;
@@ -1426,7 +1461,6 @@
   }
 
   function closeEvent() {
-    closeKeyboardIfOpen(); // ✅ FIX
     document.getElementById('event-screen').classList.remove('active');
     currentEventId = null;
   }
@@ -1444,7 +1478,10 @@
 
     if (currentEventId === id) updateEventJoinUI(ev.registered);
 
+    // refresh “I miei eventi”
     renderMyEvents();
+
+    // markers: restano filtrati, ma se cambi registrazione non cambia visibilità marker
     updateMapMarkersFromFilters();
   }
 
@@ -1464,6 +1501,9 @@
     }
   }
 
+  // =========================
+  // Events section layout
+  // =========================
   function renderEventsSection() {
     renderMyEvents();
     renderEventFiltersRow();
@@ -1505,24 +1545,40 @@
     `).join('');
   }
 
+  // ✅ MODIFICATO: Selezione esclusiva (un solo pulsante attivo in totale)
   function renderEventFiltersRow() {
-    const allFilters = ['Tutti','Yoga & Meditazione','Nutrizione','Movimento','Workshop','Outdoor'];
+    const allFilters = [
+      'Tutti', 
+      'Yoga & Meditazione', 
+      'Nutrizione', 
+      'Movimento',
+      'Workshop', 
+      'Outdoor'
+    ];
+
     const container = document.getElementById('event-filters-combined');
     if (!container) return;
 
+    // Crea i pulsanti in un unico flusso, permettendo la selezione singola
     container.innerHTML = allFilters.map(f => `
-      <button onclick="setSingleFilter('${escapeHtml(f)}')"
+      <button
+        onclick="setSingleFilter('${escapeHtml(f)}')"
         class="filter-chip chip-small ${activeEventFilter === f ? 'active' : 'inactive'}"
       >${f}</button>
     `).join('');
   }
 
   function setSingleFilter(val) {
+    // Se clicco quello attivo, rimango su quello attivo (o resetto a Tutti se preferisci, qui forzo switch)
+    // Logica: clicco X -> active=X. Clicco Y -> active=Y.
     activeEventFilter = val;
     renderEventFiltersRow();
     updateMapMarkersFromFilters();
   }
 
+  // =========================
+  // Leaflet map
+  // =========================
   function ensureEventsMap() {
     if (eventsMap) {
       updateMapMarkersFromFilters();
@@ -1531,7 +1587,7 @@
     eventsMap = L.map('events-map', { zoomControl: false }).setView([45.4642, 9.19], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(eventsMap);
     L.control.zoom({ position: 'topleft' }).addTo(eventsMap);
-
+    
     eventsData.forEach(ev => {
       const marker = L.marker([ev.lat, ev.lng]);
       marker.on('click', () => openEvent(ev.id));
@@ -1542,6 +1598,7 @@
 
   function eventMatchesFilters(ev) {
     if (activeEventFilter === 'Tutti') return true;
+    // Il filtro attivo deve corrispondere O al topic O al type
     return (ev.topic === activeEventFilter) || (ev.type === activeEventFilter);
   }
 
@@ -1674,7 +1731,6 @@
   // Chat
   // =========================
   function toggleChat(show) {
-    closeKeyboardIfOpen(); // ✅ FIX
     const chatScreen = document.getElementById('chat-screen');
     const navBar = document.getElementById('main-nav');
     chatScreen.classList.toggle('active', show);
@@ -1692,28 +1748,33 @@
   }
 
   function handleChatEnter(e) { if (e.key === 'Enter') sendMessage(); }
-
-  function sendSuggestion(text, type) {
-    document.getElementById('chat-input').value = text;
-    sendMessage(type);
+  
+  // ✅ MODIFICATO: ora accetta un tipo per lanciare la card
+  function sendSuggestion(text, type) { 
+    document.getElementById('chat-input').value = text; 
+    sendMessage(type); // Passa il tipo (article/event)
   }
 
   function sendMessage(cardType = null) {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     const container = document.getElementById('chat-messages');
-
+    
     if (text) {
+      // 1. Messaggio Utente
       container.insertAdjacentHTML('beforeend', `<div class="msg-bubble msg-user">${escapeHtml(text)}</div>`);
       input.value = '';
       requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
 
+      // 2. Risposta Bot
       setTimeout(() => {
+        // Se è stato richiesto una card specifica dai pulsanti
         if (cardType) {
           const intro = cardType === 'article' ? "Ecco un articolo interessante per te! 📚" : "Ho trovato questo evento interessante 🗓️";
           container.insertAdjacentHTML('beforeend', `<div class="msg-bubble msg-neuron">${intro}</div>`);
           renderChatCard(cardType, container);
         } else {
+          // Risposta normale basata sul testo
           const response = getBotResponse(text);
           container.insertAdjacentHTML('beforeend', `<div class="msg-bubble msg-neuron">${escapeHtml(response)}</div>`);
         }
@@ -1724,22 +1785,29 @@
 
   function getBotResponse(input) {
     const lower = input.toLowerCase();
+
+    // Saluti
     const greetingsKeys = ['ciao', 'buongiorno', 'buonasera', 'salve', 'ehi'];
     if (greetingsKeys.some(k => lower.includes(k))) {
       return botDatabase.greetings[Math.floor(Math.random() * botDatabase.greetings.length)];
     }
+
+    // Ricerca keyword nel database
     for (const [key, answers] of Object.entries(botDatabase.responses)) {
       if (lower.includes(key)) {
         return answers[Math.floor(Math.random() * answers.length)];
       }
     }
+
+    // Fallback: Consiglio generico (Tip)
     return botDatabase.tips[Math.floor(Math.random() * botDatabase.tips.length)];
   }
 
+  // ✅ Nuova funzione: Renderizza una card nella chat
   function renderChatCard(type, container) {
     let item;
     let clickFn;
-
+    
     if (type === 'article') {
       item = articlesData[Math.floor(Math.random() * articlesData.length)];
       clickFn = `openArticle(${item.id})`;
@@ -1885,7 +1953,7 @@
     function pickOther(currentName, dx) {
       const idx = screens.indexOf(currentName);
       if (idx === -1) return null;
-      if (dx < 0) { if (idx < screens.length - 1) return screens[idx + 1]; }
+      if (dx < 0) { if (idx < screens.length - 1) return screens[idx + 1]; } 
       else { if (idx > 0) return screens[idx - 1]; }
       return null;
     }
@@ -2013,12 +2081,9 @@
   }
 
   // =========================
-  // Goals/Tasks
+  // Goals / Tasks
   // =========================
-  function toggleGoals(show) {
-    closeKeyboardIfOpen(); // ✅ FIX
-    document.getElementById('goals-screen').classList.toggle('active', show);
-  }
+  function toggleGoals(show) { document.getElementById('goals-screen').classList.toggle('active', show); }
   function handleEnter(e) { if (e.key === 'Enter') addTask(); }
 
   function addTask() {
@@ -2111,16 +2176,13 @@
   }
 
   // =========================
-  // Fake Mobile Keyboard
+  // Fake Mobile Keyboard (Home "Scrivi qui")
   // =========================
   let __kbTargetInputId = null;
   let __kbShift = false;
   let __kbEnterMode = 'dashboard';
 
   function openMobileKeyboard(targetInputId, enterMode = 'dashboard') {
-    // ✅ FIX: se già aperta, chiudi e resetta bene
-    closeKeyboardIfOpen();
-
     __kbTargetInputId = targetInputId;
     __kbEnterMode = enterMode;
 
@@ -2128,11 +2190,13 @@
     const input = document.getElementById(targetInputId);
     if (!kb || !input) return;
 
+    // Evita l'apertura della tastiera reale su mobile: scriviamo via tasti finti
     input.setAttribute('readonly', 'readonly');
 
     kb.classList.add('active');
     kb.setAttribute('aria-hidden', 'false');
 
+    // porta l'input in vista (soprattutto su mobile)
     setTimeout(() => {
       try { input.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (_) {}
     }, 120);
@@ -2145,6 +2209,7 @@
     kb.classList.remove('active');
     kb.setAttribute('aria-hidden', 'true');
 
+    // ripristina input
     if (__kbTargetInputId) {
       const input = document.getElementById(__kbTargetInputId);
       if (input) input.removeAttribute('readonly');
@@ -2175,8 +2240,11 @@
     if (__kbShift && /^[a-z]$/.test(ch)) out = ch.toUpperCase();
 
     input.value = (input.value || '') + out;
+
+    // trigger oninput handlers (es. preview nome buddy)
     input.dispatchEvent(new Event('input', { bubbles: true }));
 
+    // shift singolo stile iOS (si spegne dopo 1 lettera)
     if (__kbShift) {
       __kbShift = false;
       const shiftBtn = document.getElementById('kb-shift');
@@ -2188,6 +2256,7 @@
     const input = kbGetInput();
     if (!input) return;
     input.value = (input.value || '') + ' ';
+
     input.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
@@ -2196,43 +2265,35 @@
     if (!input) return;
     const v = input.value || '';
     input.value = v.slice(0, -1);
+
     input.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
   function kbEnter() {
+    // Invio: comportamento diverso in base al target
     if (__kbEnterMode === 'dashboard') {
       closeMobileKeyboard();
       sendFromDashboard();
       return;
     }
-    if (__kbEnterMode === 'chat') {
-      closeMobileKeyboard();
-      sendMessage();
-      return;
-    }
+    // Default: "Done" (chiude soltanto)
     closeMobileKeyboard();
   }
 
-  // =========================
-  // Hook input -> tastiera finta + chiusura su tap fuori
-  // =========================
+  // Aggancio SOLO all'input "Scrivi qui" della home, senza toccare altro
   document.addEventListener('DOMContentLoaded', () => {
     const homeInput = document.getElementById('dashboard-chat-input');
-    if (homeInput) {
-      homeInput.addEventListener('pointerdown', (e) => {
-        e.stopPropagation();
-        openMobileKeyboard('dashboard-chat-input', 'dashboard');
-      });
-    }
+    if (!homeInput) return;
 
-    const chatInput = document.getElementById('chat-input');
-    if (chatInput) {
-      chatInput.addEventListener('pointerdown', (e) => {
-        e.stopPropagation();
-        openMobileKeyboard('chat-input', 'chat');
-      });
-    }
+    // apri tastiera finta al tap/click
+    homeInput.addEventListener('pointerdown', (e) => {
+      // mantiene il comportamento corrente (non aprire la chat)
+      e.stopPropagation();
+      openMobileKeyboard('dashboard-chat-input', 'dashboard');
+    });
 
+    
+    // apri la stessa tastiera finta anche per il nome del buddy (nella schermata personalizza buddy)
     const buddyNameInput = document.getElementById('buddy-name-input');
     if (buddyNameInput) {
       buddyNameInput.addEventListener('pointerdown', (e) => {
@@ -2241,19 +2302,18 @@
       });
     }
 
+    // chiudi tastiera se tocchi fuori (ma dentro iphone-frame)
     const frame = document.querySelector('.iphone-frame');
     frame?.addEventListener('pointerdown', (e) => {
       const kb = document.getElementById('mobile-keyboard');
       if (!kb || !kb.classList.contains('active')) return;
-
       if (e.target.closest('#mobile-keyboard')) return;
       if (e.target.closest('#dashboard-chat-input')) return;
-      if (e.target.closest('#chat-input')) return;
       if (e.target.closest('#buddy-name-input')) return;
-
       closeMobileKeyboard();
     });
   });
+
 </script>
 </body>
 </html>
