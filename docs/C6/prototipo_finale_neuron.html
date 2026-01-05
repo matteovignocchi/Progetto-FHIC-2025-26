@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neuron App - Advanced Chat & Events</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8f7f2; color: #1a2e35; }
+
+    .iphone-frame {
+      width: 375px;
+      height: 812px;
+      background: #fffdf9;
+      border: 12px solid #1a2e35;
+      border-radius: 40px;
+      position: relative;
+      overflow: hidden;
+      margin: 20px auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .scroll-container { -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+
+    #favorites-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: visible;
+      padding-bottom: 4px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .grab-cursor { cursor: grab; }
+    .grab-cursor:active { cursor: grabbing; }
+
+    :root { --nav-h: 80px; }
+
+    .screen-content {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #f8f7f2;
+      overflow-y: auto;
+      padding-bottom: calc(var(--nav-h) + 44px) !important;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+    .screen-content.active-screen { display: block; opacity: 1; z-index: 10; }
+
+    .slide-screen {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: #f8f7f2; z-index: 70;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .slide-screen.active { transform: translateY(0); }
+
+    #goals-screen { overflow-y: auto; }
+    #chat-messages { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 90px; }
+    #article-body, #event-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 24px; }
+
+    .card {
+      background: white; border-radius: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      padding: 24px; margin-bottom: 16px;
+      transition: transform 0.2s;
+    }
+    .card:active { transform: scale(0.98); }
+
+    .progress-ring { transform: rotate(-90deg); }
+    .progress-ring__circle { transition: stroke-dashoffset 0.5s ease-out; transform-origin: 50% 50%; }
+
+    .checkbox-custom {
+      width: 24px; height: 24px; border: 2px solid #d1d5db; border-radius: 8px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; flex-shrink: 0;
+    }
+    .task-row.is-completed .checkbox-custom { background-color: #10b981; border-color: #10b981; }
+    .task-row.is-completed .checkbox-custom::after { content: '✓'; color: white; font-weight: bold; font-size: 14px; }
+    .task-row.is-completed .task-text { color: #9ca3af; text-decoration: line-through; opacity: 0.7; }
+
+    .nav-bar {
+      position: absolute; bottom: 0; width: 100%;
+      height: var(--nav-h);
+      background: white; display: flex; justify-content: space-around; align-items: center;
+      border-top: 1px solid #eee; z-index: 60; transition: opacity 0.3s ease;
+    }
+
+    .msg-bubble { max-width: 80%; padding: 12px 16px; border-radius: 20px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .msg-neuron { background: white; border-bottom-left-radius: 4px; align-self: flex-start; }
+    .msg-user { background: #10b981; color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
+    
+    /* Stile per le card dentro la chat */
+    .chat-card-container {
+      width: 85%;
+      background: white;
+      border-radius: 20px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.2s;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .chat-card-container:active { transform: scale(0.98); }
+    
+    .buddy-float { animation: float 3.5s ease-in-out infinite; }
+    @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
+
+    .filter-chip {
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      border: 1px solid transparent;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .filter-chip.active {
+      background-color: #10b981;
+      color: white;
+      box-shadow: 0 10px 24px rgba(16, 185, 129, 0.28);
+    }
+    .filter-chip.inactive {
+      background-color: #ffffff;
+      color: #1a2e35;
+      border-color: #e5e7eb;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    }
+    .filter-chip.inactive:hover { border-color: #10b981; color: #10b981; }
+
+    /* Chip ridotti per eventi */
+    .chip-small {
+      padding: 7px 11px !important; 
+      font-size: 11px !important;
+    }
+
+    .filters-row {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .filters-row::-webkit-scrollbar { display: none; }
+
+    .lib-list-card {
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      transition: all 0.2s;
+      margin-bottom: 12px;
+    }
+    .lib-list-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); }
+
+    /* ✅ Profile UI */
+    .profile-card {
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 18px;
+    }
+    .profile-input {
+      width: 100%;
+      background: #fff7eb;
+      border: 2px solid #ede9fe;
+      border-radius: 18px;
+      padding: 14px 16px;
+      outline: none;
+      font-weight: 600;
+      color: #1a2e35;
+      font-size: 16px;
+    }
+    .profile-input.secondary {
+      background: #fff7eb;
+      font-weight: 600;
+      color: #6b7280;
+    }
+
+    /* Typography */
+    :root{
+      --fs-xxs: 10px; --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px;
+      --fs-lg: 18px; --fs-xl: 22px; --fs-2xl: 28px;
+    }
+    .t-xxs{ font-size: var(--fs-xxs); line-height: 1.2; }
+    .t-xs { font-size: var(--fs-xs);  line-height: 1.3; }
+    .t-sm { font-size: var(--fs-sm);  line-height: 1.35; }
+    .t-md { font-size: var(--fs-md);  line-height: 1.4; }
+    .t-lg { font-size: var(--fs-lg);  line-height: 1.25; }
+    .t-xl { font-size: var(--fs-xl);  line-height: 1.15; }
+    .t-2xl{ font-size: var(--fs-2xl); line-height: 1.1; }
+
+    .msg-bubble{ font-size: var(--fs-sm); }
+    #article-content, #event-content{ font-size: var(--fs-sm); line-height: 1.6; }
+    .filter-chip{ font-size: var(--fs-md); }
+
+    /* Leaflet */
+    .leaflet-container { font-family: 'Inter', sans-serif; }
+    .leaflet-control-attribution { display: none; }
+    .leaflet-control-zoom {
+      border: 0 !important;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12) !important;
+      border-radius: 14px !important;
+      overflow: hidden;
+    }
+    .leaflet-control-zoom a {
+      width: 44px !important; height: 44px !important;
+      line-height: 44px !important; font-size: 22px !important;
+      font-weight: 800 !important; color: #111827 !important;
+      background: #ffffff !important; border: 0 !important;
+    }
+    .leaflet-control-zoom a:hover { background: #f3f4f6 !important; }
+
+    .map-shell{
+      border-radius: 30px; overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    }
+  
+    /* =========================
+       Fake Mobile Keyboard (Home "Scrivi qui")
+       ========================= */
+    .mobile-kb{
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height: 280px;
+      background:#ffffff;
+      border-top:1px solid #e5e7eb;
+      z-index: 95;
+      transform: translateY(100%);
+      transition: transform .25s cubic-bezier(.22,1,.36,1);
+      box-shadow: 0 -18px 40px rgba(0,0,0,0.18);
+      display:flex;
+      flex-direction:column;
+      padding: 10px 10px 14px;
+      gap: 8px;
+      user-select:none;
+    }
+    .mobile-kb.active{ transform: translateY(0); }
+    .mobile-kb-row{ display:flex; gap:8px; }
+    .mobile-kb-key{
+      flex:1;
+      height: 44px;
+      border-radius: 14px;
+      background:#f3f4f6;
+      border: 1px solid #e5e7eb;
+      font-weight: 800;
+      font-size: 14px;
+      color:#111827;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      transition: transform .08s;
+    }
+    .mobile-kb-key:active{ transform: scale(0.98); }
+    .mobile-kb-key.wide{ flex: 1.6; }
+    .mobile-kb-key.wider{ flex: 2.2; }
+    .mobile-kb-key.green{
+      background: rgba(16,185,129,0.12);
+      border-color: rgba(16,185,129,0.35);
+      color:#059669;
+    }
+    .mobile-kb-topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 2px 6px 0;
+    }
+    .mobile-kb-topbar .hint{
+      font-size: 11px;
+      font-weight: 800;
+      color:#9ca3af;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .mobile-kb-topbar .close{
+      width: 38px; height: 30px;
+      border-radius: 12px;
+      background:#f3f4f6;
+      border: 1px solid #e5e7eb;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      color:#6b7280;
+    }
+    .kb-spacer{ height: 10px; }
+
+  
+    /* Buddy customizer */
+    .buddy-tile{
+      background:#ffffff;
+      border-radius: 22px;
+      padding: 10px;
+      border: 2px solid #e5e7eb;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+      transition: transform .15s, border-color .15s, box-shadow .15s;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 6px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .buddy-tile:active{ transform: scale(0.98); }
+    .buddy-tile.selected{
+      border-color: #10b981;
+      box-shadow: 0 12px 26px rgba(16,185,129,0.22);
+    }
+    .buddy-thumb{
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background: #fff7eb;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+</style>
+</head>
+
+<body>
+<div class="iphone-frame">
+
+  <div id="delete-modal" class="absolute inset-0 z-[100] bg-black/30 backdrop-blur-sm hidden flex items-center justify-center p-6 opacity-0 transition-opacity duration-200">
+    <div class="bg-white p-6 rounded-3xl shadow-2xl w-full max-w-[85%] transform scale-95 transition-transform duration-200" id="delete-modal-content">
+      <h3 class="t-lg font-bold text-center mb-2">Elimina Obiettivo</h3>
+      <p class="t-sm text-gray-500 text-center mb-6">Sei sicuro?</p>
+      <div class="flex gap-3">
+        <button onclick="closeDeleteModal()" class="flex-1 py-3 px-4 bg-gray-100 text-gray-700 font-semibold rounded-xl t-sm">Annulla</button>
+        <button onclick="confirmDelete()" class="flex-1 py-3 px-4 bg-red-500 text-white font-semibold rounded-xl t-sm">Elimina</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboard-screen" class="screen-content active-screen p-6 no-scrollbar grab-cursor scroll-container">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <p class="t-xxs font-bold tracking-widest text-[#10b981] uppercase">La tua Dashboard</p>
+        <h1 class="t-xl font-bold">Ciao, <span id="user-name">Marta</span></h1>
+      </div>
+
+      <button onclick="openProfile(true)" class="w-10 h-10 bg-gray-200 rounded-full overflow-hidden border-2 border-white shadow-sm">
+        <img id="avatar-img" src="https://api.dicebear.com/7.x/notionists/svg?seed=Marta" alt="avatar" class="w-full h-full object-cover" />
+      </button>
+    </div>
+
+    <div class="card cursor-pointer group" onclick="toggleGoals(true)">
+      <div class="flex justify-between items-start mb-2">
+        <h3 class="t-lg font-semibold">Energia Quotidiana</h3>
+        <span id="status-badge" class="bg-red-400 text-white t-xxs px-2 py-1 rounded-full font-bold uppercase transition-colors">In Corso</span>
+      </div>
+      <div class="flex flex-col items-center py-4">
+        <div class="relative flex items-center justify-center">
+          <svg class="progress-ring" width="120" height="120">
+            <circle class="text-gray-100" stroke-width="8" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60"></circle>
+            <circle class="progress-ring__circle text-[#10b981]" id="circle-dash" stroke-width="8" stroke-dasharray="314.15" stroke-dashoffset="314.15" stroke-linecap="round" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60"></circle>
+          </svg>
+          <div class="absolute text-center">
+            <span class="t-xl font-bold block percent-text text-[#1a2e35]">0%</span>
+            <span class="t-xxs uppercase text-gray-400">Completato</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card cursor-pointer hover:shadow-md transition-shadow group" onclick="toggleChat(true)">
+      <div class="flex items-center gap-5 mb-6">
+        <div class="w-16 h-16 rounded-full overflow-hidden border border-gray-100 shadow-sm flex-shrink-0">
+          <img id="buddy-img-dashboard" src="https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy1.png" alt="Neuron" class="w-full h-full object-cover buddy-float" />
+        </div>
+        <div>
+          <h4 id="buddy-name-dashboard" class="t-lg font-bold">Neuron</h4>
+          <p class="t-sm font-medium text-[#10b981] mt-1 group-hover:underline">Tocca per aprire la chat...</p>
+        </div>
+      </div>
+
+      <div class="relative flex items-center">
+        <input
+          id="dashboard-chat-input"
+          type="text"
+          placeholder="Scrivi qui..."
+          class="w-full bg-gray-100 rounded-2xl py-4 pl-5 pr-14 t-md outline-none focus:ring-2 focus:ring-[#10b981] transition-all"
+          onclick="event.stopPropagation()"
+          onkeydown="handleDashboardChatEnter(event)"
+        />
+        <button
+          onclick="event.stopPropagation(); sendFromDashboard()"
+          class="absolute right-3 top-1/2 -translate-y-1/2 bg-[#10b981] text-white p-2 rounded-xl shadow-sm hover:bg-[#059669] active:scale-95 transition"
+          aria-label="Invia messaggio"
+        >
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-8">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-1.5 h-7 bg-[#ea580c] rounded-sm"></div>
+        <h2 class="t-xl font-bold text-[#1a2e35]">Articoli scelti per te</h2>
+      </div>
+      <div class="flex flex-col space-y-4" id="home-articles-list"></div>
+    </div>
+  </div>
+
+  <div id="library-screen" class="screen-content p-6 no-scrollbar grab-cursor scroll-container">
+    <h1 class="t-2xl font-bold text-[#1a2e35] mb-6">Libreria</h1>
+
+    <div class="mb-6 space-y-4">
+      <div class="grid grid-cols-2 gap-2" id="filter-topic-container"></div>
+      <div class="grid grid-cols-2 gap-2" id="filter-type-container"></div>
+    </div>
+
+    <div id="favorites-wrapper" class="hidden mb-8">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-1 h-5 bg-red-500 rounded-full"></div>
+        <h2 class="t-lg font-bold text-[#1a2e35]">I tuoi Preferiti <span class="text-red-500">❤️</span></h2>
+      </div>
+      <div class="no-scrollbar" id="favorites-list"></div>
+    </div>
+
+    <div class="mb-4">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-1 h-5 bg-[#10b981] rounded-full"></div>
+        <h2 class="t-lg font-bold text-[#1a2e35]" id="list-title">Esplora</h2>
+      </div>
+      <div id="library-main-list"></div>
+    </div>
+  </div>
+
+  <div id="events-screen" class="screen-content p-6 no-scrollbar grab-cursor scroll-container">
+    <h1 class="t-2xl font-bold text-[#1a2e35] mb-6">Eventi</h1>
+
+    <div class="mb-8">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-1 h-5 bg-[#10b981] rounded-full"></div>
+        <h2 class="t-lg font-bold text-[#1a2e35]">I miei Eventi</h2>
+      </div>
+      <div id="my-events-list"></div>
+    </div>
+
+    <div class="mb-4">
+      <div class="flex flex-wrap gap-2" id="event-filters-combined"></div>
+    </div>
+
+    <div class="map-shell">
+      <div id="events-map" class="w-full h-[520px] bg-gray-100"></div>
+    </div>
+
+    <div style="height: calc(var(--nav-h) + 44px)"></div>
+  </div>
+
+  <div id="goals-screen" class="slide-screen p-6 pb-32 no-scrollbar grab-cursor scroll-container">
+    <div class="flex justify-between items-center mb-6 sticky top-0 bg-[#f8f7f2] py-2 z-10">
+      <h1 class="t-xl font-bold">I tuoi Obiettivi</h1>
+      <button onclick="toggleGoals(false)" class="w-10 h-10 bg-white shadow-sm rounded-full flex items-center justify-center hover:bg-gray-50">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <div class="flex flex-col items-center mb-8">
+      <div class="relative flex items-center justify-center">
+        <svg class="progress-ring" width="140" height="140">
+          <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="60" cx="70" cy="70"></circle>
+          <circle class="progress-ring__circle text-[#10b981]" id="circle-goals" stroke-width="10" stroke-dasharray="376.99" stroke-dashoffset="376.99" stroke-linecap="round" stroke="currentColor" fill="transparent" r="60" cx="70" cy="70"></circle>
+        </svg>
+        <span class="absolute t-2xl font-bold percent-text text-[#1a2e35]">0%</span>
+      </div>
+    </div>
+
+    <div class="flex gap-2 mb-6">
+      <input type="text" id="new-task-input" placeholder="Nuovo obiettivo..." class="flex-1 bg-white p-4 rounded-2xl shadow-sm outline-none border border-transparent focus:border-[#10b981] transition-all t-sm" onkeypress="handleEnter(event)">
+      <button onclick="addTask()" class="bg-[#10b981] text-white p-4 rounded-2xl shadow-lg hover:bg-[#059669]">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+      </button>
+    </div>
+
+    <h3 class="t-lg font-bold mb-4 text-gray-600">Lista del giorno</h3>
+    <div class="space-y-3" id="tasks-container"></div>
+  </div>
+
+  <div id="chat-screen" class="slide-screen bg-[#f8f7f2]">
+    <div class="px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between shadow-sm z-10">
+      <div class="flex items-center gap-3">
+        <button class="w-10 h-10 rounded-full overflow-hidden border border-gray-100 flex-shrink-0 active:scale-[0.98] transition" onclick="openBuddyCustomizer(true); event.stopPropagation();" aria-label="Personalizza Buddy">
+          <img id="buddy-img-chat" src="https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy1.png" alt="Neuron" class="w-full h-full object-cover buddy-float" />
+        </button>
+        <div>
+          <h3 id="buddy-name-chat" class="t-lg font-bold leading-tight">Neuron</h3>
+          <p class="t-xxs text-[#10b981] font-bold uppercase tracking-wide">Online</p>
+        </div>
+      </div>
+      <button onclick="toggleChat(false)" class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-100 text-gray-500 hover:text-red-500">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <div id="chat-messages" class="flex-1 p-6 no-scrollbar flex flex-col gap-2">
+      <div class="msg-bubble msg-neuron">Ciao! 👋<br>Come posso aiutarti oggi?</div>
+    </div>
+
+    <div class="px-6 pb-2 pt-2 bg-[#f8f7f2]">
+      <h6 class="t-xxs font-bold text-gray-400 uppercase tracking-widest mb-3 pl-1">Suggerimenti</h6>
+      <div class="grid grid-cols-2 gap-2">
+        <button class="filter-chip inactive w-full text-center" onclick="sendSuggestion('Consigliami un Articolo', 'article')">Trova Articoli</button>
+        <button class="filter-chip inactive w-full text-center" onclick="sendSuggestion('Consigliami un Evento', 'event')">Eventi</button>
+      </div>
+    </div>
+
+    <div class="p-4 bg-white border-t border-gray-100 pb-8">
+      <div class="relative flex items-center">
+        <input type="text" id="chat-input" placeholder="Scrivi un messaggio..." class="w-full bg-gray-100 rounded-2xl py-3 pl-4 pr-12 t-sm outline-none focus:ring-2 focus:ring-[#10b981] transition-all" onkeypress="handleChatEnter(event)">
+        <button onclick="sendMessage()" class="absolute right-2 p-2 bg-[#10b981] text-white rounded-xl shadow-md">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="article-screen" class="slide-screen bg-[#f8f7f2]">
+    <div class="px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between shadow-sm z-10">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-[#10b981] font-bold flex-shrink-0">A</div>
+        <div class="min-w-0">
+          <h3 id="article-header-title" class="t-lg font-bold leading-tight truncate text-[#1a2e35]"></h3>
+          <p id="article-header-sub" class="t-xxs text-gray-400 font-bold uppercase tracking-wide truncate"></p>
+        </div>
+      </div>
+
+      <button onclick="closeArticle()" class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-100 text-gray-500 hover:text-red-500 flex-shrink-0">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div id="article-body" class="flex-1 px-6 py-6 overflow-y-auto no-scrollbar">
+      <div id="article-tags" class="flex flex-wrap gap-2 mb-4"></div>
+      <div id="article-hero" class="w-full h-44 rounded-3xl overflow-hidden mb-6 bg-gray-100">
+        <img id="article-img" src="" alt="cover" class="w-full h-full object-cover">
+      </div>
+      <div id="article-content" class="t-sm text-[#1a2e35] space-y-4"></div>
+    </div>
+
+    <div class="p-4 bg-white border-t border-gray-100 pb-8">
+      <div class="flex items-center gap-3">
+        <button id="article-save-btn" onclick="toggleSaveCurrentArticle()" class="flex-1 py-3 px-4 bg-[#10b981] text-white font-semibold rounded-2xl shadow-md hover:bg-[#059669] active:scale-[0.99] transition flex items-center justify-center gap-2">
+          <span id="article-save-label" class="t-sm">Salva</span>
+          <span id="article-save-heart" class="text-white t-sm">♡</span>
+        </button>
+        <button onclick="shareMock()" class="py-3 px-4 bg-gray-100 text-gray-700 font-semibold rounded-2xl hover:bg-gray-200 transition t-sm">
+          Condividi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="event-screen" class="slide-screen bg-[#f8f7f2]">
+    <div class="px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between shadow-sm z-10">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-[#10b981] font-bold flex-shrink-0">E</div>
+        <div class="min-w-0">
+          <h3 id="event-header-title" class="t-lg font-bold leading-tight truncate text-[#1a2e35]"></h3>
+          <p id="event-header-sub" class="t-xxs text-gray-400 font-bold uppercase tracking-wide truncate"></p>
+        </div>
+      </div>
+
+      <button onclick="closeEvent()" class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-100 text-gray-500 hover:text-red-500 flex-shrink-0">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div id="event-body" class="flex-1 px-6 py-6 overflow-y-auto no-scrollbar">
+      <div id="event-tags" class="flex flex-wrap gap-2 mb-4"></div>
+      <div id="event-hero" class="w-full h-44 rounded-3xl overflow-hidden mb-6 bg-gray-100">
+        <img id="event-img" src="" alt="cover" class="w-full h-full object-cover">
+      </div>
+      <div id="event-content" class="t-sm text-[#1a2e35] space-y-4"></div>
+    </div>
+
+    <div class="p-4 bg-white border-t border-gray-100 pb-8">
+      <div class="flex items-center gap-3">
+        <button id="event-join-btn" onclick="toggleJoinCurrentEvent()" class="flex-1 py-3 px-4 bg-[#10b981] text-white font-semibold rounded-2xl shadow-md hover:bg-[#059669] active:scale-[0.99] transition flex items-center justify-center gap-2">
+          <span id="event-join-label" class="t-sm">Iscriviti</span>
+          <span id="event-join-icon" class="t-sm">＋</span>
+        </button>
+        <button onclick="shareMock()" class="py-3 px-4 bg-gray-100 text-gray-700 font-semibold rounded-2xl hover:bg-gray-200 transition t-sm">
+          Condividi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="profile-screen" class="slide-screen bg-[#f8f7f2]">
+    <div class="px-6 pt-6 pb-3 flex items-start justify-between">
+      <div>
+        <h1 class="t-2xl font-bold">Profilo</h1>
+        <div class="flex items-center gap-3 mt-6">
+          <div class="w-1.5 h-7 bg-[#ea580c] rounded-sm"></div>
+          <h2 class="t-xl font-bold">Impostazioni Utente</h2>
+        </div>
+      </div>
+      <button onclick="openProfile(false)" class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-1 px-6 pb-28 overflow-y-auto no-scrollbar">
+      <div class="flex justify-center py-4">
+        <div class="relative">
+          <div class="w-36 h-36 rounded-full bg-[#efe7fb] flex items-center justify-center overflow-hidden ring-4 ring-white shadow-sm">
+            <img id="profile-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Marta" alt="avatar" class="w-full h-full object-cover" />
+          </div>
+          <div class="absolute bottom-2 right-2 w-12 h-12 rounded-full bg-[#10b981] ring-4 ring-white shadow-md flex items-center justify-center">
+            <svg width="22" height="22" fill="none" stroke="white" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 7h4l2-2h6l2 2h4v14H3V7zm9 3a4 4 0 100 8 4 4 0 000-8z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="px-3 pt-2">
+          <p class="t-xs font-extrabold text-gray-500 tracking-widest">NOME</p>
+          <input id="profile-name" class="profile-input mt-2" value="Marta" />
+        </div>
+
+        <div class="px-3 pt-6">
+          <p class="t-xs font-extrabold text-gray-500 tracking-widest">EMAIL</p>
+          <input id="profile-email" class="profile-input secondary mt-2" value="marta@email.com" />
+        </div>
+
+        <div class="px-3 pt-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <span class="t-sm font-bold text-[#1a2e35]">NOTIFICHE PUSH</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input id="profile-push" type="checkbox" class="sr-only peer">
+              <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[#10b981] transition"></div>
+              <div class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition peer-checked:translate-x-6"></div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="t-sm font-bold text-[#1a2e35]">AVVISAMI DI NUOVI EVENTI</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input id="profile-events" type="checkbox" class="sr-only peer">
+              <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[#10b981] transition"></div>
+              <div class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition peer-checked:translate-x-6"></div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="t-sm font-bold text-[#1a2e35]">AVVISAMI DI NUOVI ARTICOLI</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input id="profile-articles" type="checkbox" class="sr-only peer">
+              <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[#10b981] transition"></div>
+              <div class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition peer-checked:translate-x-6"></div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="t-sm font-bold text-[#1a2e35]">RICORDAMI DELLE TASK</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input id="profile-tasks" type="checkbox" class="sr-only peer">
+              <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[#10b981] transition"></div>
+              <div class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition peer-checked:translate-x-6"></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="px-3 pt-8 pb-3">
+          <button onclick="saveProfile()" class="w-full bg-[#10b981] text-white font-extrabold t-lg py-5 rounded-3xl shadow-lg hover:bg-[#059669] transition">
+            Salva Modifiche
+          </button>
+
+          <p id="profile-saved-msg" class="mt-4 text-center t-sm font-bold text-[#10b981] opacity-0 transition-opacity duration-300">
+            ✓ Modifiche salvate
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- =========================
+       Buddy Customizer (apre SOLO dalla chat cliccando il buddy)
+       ========================= -->
+  <div id="buddy-customizer-screen" class="slide-screen bg-[#f8f7f2]">
+    <div class="px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between shadow-sm z-10">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-[#10b981] font-extrabold flex-shrink-0">B</div>
+        <div class="min-w-0">
+          <h3 class="t-lg font-bold leading-tight truncate text-[#1a2e35]">Personalizza Buddy</h3>
+          <p class="t-xxs text-gray-400 font-bold uppercase tracking-wide truncate">Scegli il tuo stile</p>
+        </div>
+      </div>
+
+      <button onclick="openBuddyCustomizer(false)" class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-100 text-gray-500 hover:text-red-500 flex-shrink-0" aria-label="Chiudi">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-1 px-6 py-6 overflow-y-auto no-scrollbar">
+      <div class="card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <p class="t-xxs font-bold tracking-widest text-[#10b981] uppercase">Anteprima</p>
+            <h2 class="t-lg font-bold">Il tuo Buddy</h2>
+          </div>
+          <div class="w-16 h-16 rounded-2xl bg-[#fff7eb] border border-gray-100 overflow-hidden shadow-sm flex items-center justify-center">
+            <img id="buddy-preview-img" src="" alt="buddy preview" class="w-full h-full object-cover" />
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <p class="t-xs font-extrabold text-gray-500 tracking-widest">NOME BUDDY</p>
+          <input id="buddy-name-input" class="profile-input mt-2" value="Neuron" maxlength="24"
+                 placeholder="Es. Neuron"
+                 oninput="updateBuddyNamePreview(this.value)" />
+          <p class="t-xxs text-gray-400 font-bold mt-2">
+            Il nome si aggiorna subito in chat.
+          </p>
+        </div>
+
+
+        <div class="mt-2">
+          <p class="t-xs font-extrabold text-gray-500 tracking-widest mb-2">SCEGLI UNO STILE</p>
+          <div id="buddy-grid" class="grid grid-cols-3 gap-3"></div>
+          <p class="t-xxs text-gray-400 font-bold mt-4">
+            Tocca un buddy per selezionarlo. Il cambiamento si applica subito alla chat.
+          </p>
+        </div>
+
+        <div class="mt-6">
+          <button onclick="saveBuddySelection()" class="w-full bg-[#10b981] text-white font-extrabold t-lg py-5 rounded-3xl shadow-lg hover:bg-[#059669] transition">
+            Salva Buddy
+          </button>
+          <p id="buddy-saved-msg" class="mt-4 text-center t-sm font-bold text-[#10b981] opacity-0 transition-opacity duration-300">
+            ✓ Buddy aggiornato
+          </p>
+        </div>
+      </div>
+
+      <div style="height: 20px"></div>
+    </div>
+  </div>
+
+<div class="nav-bar" id="main-nav">
+    <div onclick="switchScreen('dashboard')" id="nav-btn-dashboard" class="cursor-pointer transition-all duration-200">
+      <div class="w-10 h-10 bg-[#10b981] rounded-lg flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <div onclick="switchScreen('library')" id="nav-btn-library" class="cursor-pointer transition-all duration-200 text-gray-300">
+      <div class="w-10 h-10 flex items-center justify-center">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <div onclick="switchScreen('events')" id="nav-btn-events" class="cursor-pointer transition-all duration-200 text-gray-300">
+      <div class="w-10 h-10 flex items-center justify-center">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================
+       Fake Mobile Keyboard (Home input)
+       ========================= -->
+  <div id="mobile-keyboard" class="mobile-kb" aria-hidden="true">
+    <div class="mobile-kb-topbar">
+      <div class="hint">Tastiera</div>
+      <button class="close" onclick="closeMobileKeyboard()" aria-label="Chiudi tastiera">✕</button>
+    </div>
+
+    <div class="mobile-kb-row">
+      <button class="mobile-kb-key" onclick="kbKey('q')">Q</button>
+      <button class="mobile-kb-key" onclick="kbKey('w')">W</button>
+      <button class="mobile-kb-key" onclick="kbKey('e')">E</button>
+      <button class="mobile-kb-key" onclick="kbKey('r')">R</button>
+      <button class="mobile-kb-key" onclick="kbKey('t')">T</button>
+      <button class="mobile-kb-key" onclick="kbKey('y')">Y</button>
+      <button class="mobile-kb-key" onclick="kbKey('u')">U</button>
+      <button class="mobile-kb-key" onclick="kbKey('i')">I</button>
+      <button class="mobile-kb-key" onclick="kbKey('o')">O</button>
+      <button class="mobile-kb-key" onclick="kbKey('p')">P</button>
+    </div>
+
+    <div class="mobile-kb-row">
+      <button class="mobile-kb-key" onclick="kbKey('a')">A</button>
+      <button class="mobile-kb-key" onclick="kbKey('s')">S</button>
+      <button class="mobile-kb-key" onclick="kbKey('d')">D</button>
+      <button class="mobile-kb-key" onclick="kbKey('f')">F</button>
+      <button class="mobile-kb-key" onclick="kbKey('g')">G</button>
+      <button class="mobile-kb-key" onclick="kbKey('h')">H</button>
+      <button class="mobile-kb-key" onclick="kbKey('j')">J</button>
+      <button class="mobile-kb-key" onclick="kbKey('k')">K</button>
+      <button class="mobile-kb-key" onclick="kbKey('l')">L</button>
+    </div>
+
+    <div class="mobile-kb-row">
+      <button class="mobile-kb-key wide" onclick="kbToggleShift()" id="kb-shift">⇧</button>
+      <button class="mobile-kb-key" onclick="kbKey('z')">Z</button>
+      <button class="mobile-kb-key" onclick="kbKey('x')">X</button>
+      <button class="mobile-kb-key" onclick="kbKey('c')">C</button>
+      <button class="mobile-kb-key" onclick="kbKey('v')">V</button>
+      <button class="mobile-kb-key" onclick="kbKey('b')">B</button>
+      <button class="mobile-kb-key" onclick="kbKey('n')">N</button>
+      <button class="mobile-kb-key" onclick="kbKey('m')">M</button>
+      <button class="mobile-kb-key wide" onclick="kbBackspace()">⌫</button>
+    </div>
+
+    <div class="mobile-kb-row">
+      <button class="mobile-kb-key wide" onclick="kbKey(',')">,</button>
+      <button class="mobile-kb-key wider" onclick="kbSpace()">spazio</button>
+      <button class="mobile-kb-key wide" onclick="kbKey('.')">.</button>
+      <button class="mobile-kb-key green wide" onclick="kbEnter()">Invio</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // =========================
+  // Articoli
+  // =========================
+  const articlesData = [
+    { id: 101, title: "Yoga al Tramonto", type: "Video", topic: "Psicologico", time: "5 min",
+      img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=400&auto=format&fit=crop",
+      fav: false, tags: ["Yoga & Meditazione", "Rilassamento", "Routine"],
+      content: [
+        "Chiudi la giornata con un rituale semplice: 5 minuti di yoga dolce per scaricare la tensione e rilassare la mente.",
+        "In questo video trovi una mini-sequenza: respiro profondo, allungamenti di schiena e anche, e una breve posizione di recupero (child pose).",
+        "Consiglio pratico: abbassa le luci, metti una playlist calma e prova a respirare 4 secondi in inspiro + 6 secondi in espiro.",
+        "Se sei alle prime armi, non forzare: l’obiettivo è sentirti più leggero, non “fare perfetto”."
+      ]
+    },
+    { id: 102, title: "5 Cibi per la Mente", type: "Articoli", topic: "Alimentare", time: "3 min",
+      img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&auto=format&fit=crop",
+      fav: true, tags: ["Nutrizione", "Focus", "Energia"],
+      content: [
+        "Quando studi tante ore, il cervello consuma un sacco: scegliere bene cosa mangiare può aiutarti a mantenere energia e concentrazione.",
+        "Ecco 5 idee pratiche: frutta secca (noci/mandorle), yogurt greco, avena, legumi, e verdure a foglia verde.",
+        "Tip veloce: abbina carboidrati + proteine (es. pane integrale + uova) per evitare picchi e cali.",
+        "Non serve la dieta perfetta: basta 1 upgrade alla volta."
+      ]
+    },
+    { id: 103, title: "Il potere del sonno", type: "Guide", topic: "Psicologico", time: "10 min",
+      img: "https://images.unsplash.com/photo-1512418490979-92798cec1380?q=80&w=400&auto=format&fit=crop",
+      fav: false, tags: ["Sonno", "Produttività", "Stress"],
+      content: [
+        "Il sonno non è tempo “perso”: è la parte in cui il cervello consolida memoria, recupera energia e stabilizza l’umore.",
+        "Se fai fatica ad addormentarti, prova: orario più stabile, luce bassa 60 minuti prima, e niente caffeina dopo metà pomeriggio.",
+        "Mini routine: doccia calda, 10 minuti di lettura leggera, 2 minuti di respiro lento."
+      ]
+    }
+  ];
+
+  let currentTopic = 'Tutti';
+  let currentType = 'Tutti';
+  let currentArticleId = null;
+
+  // =========================
+  // Events
+  // (filtri sopra mappa, marker show/hide)
+  // =========================
+  const eventsData = [
+    {
+      id: 201,
+      title: "Mindfulness al Parco Sempione",
+      type: "Workshop",
+      topic: "Yoga & Meditazione",
+      date: "Sab 17 Gen",
+      time: "10:30",
+      place: "Parco Sempione (Milano)",
+      img: "https://images.unsplash.com/photo-1520975916090-3105956dac38?q=80&w=900&auto=format&fit=crop",
+      tags: ["Yoga & Meditazione", "Mindfulness", "Respiro"],
+      lat: 45.4763, lng: 9.1752,
+      registered: true,
+      content: [
+        "Workshop pratico: esercizi guidati, respirazione e tecniche di grounding facili da usare anche prima di un esame.",
+        "Durata: 60 minuti. Livello: principianti.",
+        "Obiettivo: uscire con 2-3 strumenti semplici per gestire stress e rumination."
+      ]
+    },
+    {
+      id: 202,
+      title: "Meal Prep Smart: 3 Pranzi in 40 min",
+      type: "Workshop",
+      topic: "Nutrizione",
+      date: "Mer 21 Gen",
+      time: "18:45",
+      place: "Porta Romana (Milano)",
+      img: "https://images.unsplash.com/photo-1514986888952-8cd320577b68?q=80&w=900&auto=format&fit=crop",
+      tags: ["Nutrizione", "Organizzazione", "Energia"],
+      lat: 45.4492, lng: 9.2020,
+      registered: false,
+      content: [
+        "Demo veloce: come preparare 3 pranzi equilibrati con poco tempo (e budget studente).",
+        "Focus: carbo ‘furbi’, proteine semplici, verdure che reggono bene in frigo.",
+        "Alla fine: checklist e combinazioni jolly per variare senza stress."
+      ]
+    },
+    {
+      id: 203,
+      title: "Sunset Run + Stretching Navigli",
+      type: "Outdoor",
+      topic: "Movimento",
+      date: "Ven 23 Gen",
+      time: "19:10",
+      place: "Navigli (Milano)",
+      img: "https://media.istockphoto.com/id/1308574122/it/foto/fitness-donna-che-si-allena-allaperto.jpg?s=612x612&w=0&k=20&c=T-aaAbU7gzXrbWNjVzKQ3U3EyZpkxHLnFp2WdemdjSA=",
+      tags: ["Movimento", "Corsa", "Recupero"],
+      lat: 45.4516, lng: 9.1786,
+      registered: false,
+      content: [
+        "Corsa leggera in gruppo (ritmo easy) + 15 minuti di stretching guidato.",
+        "Percorso: Darsena → Navigli → ritorno. Durata totale ~45 minuti.",
+        "Non è una gara: è un evento per scaricare e stare bene."
+      ]
+    }
+  ];
+
+  // ✅ Nuova variabile unica per il filtro eventi
+  let activeEventFilter = 'Tutti';
+  let currentEventId = null;
+
+  let eventsMap = null;
+  const eventsMarkers = new Map(); // id -> marker
+
+  // =========================
+  // Tasks
+  // =========================
+  let tasks = [
+    { id: 1, text: "Bere 2L d'acqua", completed: false },
+    { id: 2, text: "Dormire 8 ore", completed: false },
+    { id: 3, text: "Meditazione (20 min)", completed: false }
+  ];
+  let taskToDeleteId = null;
+
+  // =========================
+  // Profile state (persistente)
+  // =========================
+  const PROFILE_KEY = "neuron_profile_v1";
+  let profile = {
+    name: "Marta",
+    email: "marta@email.com",
+    push: true,
+    events: true,
+    articles: true,
+    tasks: true
+  };
+
+  // =========================
+  // Buddy (customizer)
+  // =========================
+  const BUDDY_KEY = "neuron_buddy_v1";
+  let buddyState = { selectedId: "buddy1", name: "Neuron" };
+
+  const buddyPresets = [
+  {
+    id: "buddy1",
+    label: "Buddy 1",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy1.png"
+  },
+  {
+    id: "buddy2",
+    label: "Buddy 2",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy2.png"
+  },
+  {
+    id: "buddy3",
+    label: "Buddy 3",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy3.png"
+  },
+  {
+    id: "buddy4",
+    label: "Buddy 4",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy4.png"
+  },
+  {
+    id: "buddy5",
+    label: "Buddy 5",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy5.png"
+  },
+  {
+    id: "buddy6",
+    label: "Buddy 6",
+    img: "https://raw.githubusercontent.com/matteovignocchi/Progetto-FHIC-2025-26/main/docs/buddy6.png"
+  }
+];
+
+  function svgToDataUri(svg) {
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+
+  function loadBuddy() {
+    try {
+      const raw = localStorage.getItem(BUDDY_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      buddyState = { ...buddyState, ...parsed };
+    } catch (_) {}
+  }
+
+  function applyBuddyToUI() {
+  let selected = buddyPresets.find(b => b.id === buddyState.selectedId);
+  if (!selected) {
+    selected = buddyPresets[0];
+    buddyState.selectedId = selected.id; // normalizza eventuali vecchi valori salvati
+  }
+
+  const src = selected.img;
+
+  const dash = document.getElementById("buddy-img-dashboard");
+  const chat = document.getElementById("buddy-img-chat");
+  const prev = document.getElementById("buddy-preview-img");
+
+  if (dash) dash.src = src;
+  if (chat) chat.src = src;
+  if (prev) prev.src = src;
+
+  // Nome Buddy (dashboard + chat)
+  const nDash = document.getElementById("buddy-name-dashboard");
+  const nChat = document.getElementById("buddy-name-chat");
+  const safeName = (buddyState.name || "Neuron").trim() || "Neuron";
+  if (nDash) nDash.innerText = safeName;
+  if (nChat) nChat.innerText = safeName;
+}
+
+  function renderBuddyGrid() {
+  const grid = document.getElementById("buddy-grid");
+  if (!grid) return;
+
+  grid.innerHTML = buddyPresets.map(b => {
+    const sel = (b.id === buddyState.selectedId);
+    return `
+      <div class="buddy-tile ${sel ? "selected" : ""}" onclick="selectBuddy('${b.id}')">
+        <div class="buddy-thumb">
+          <img src="${b.img}" alt="${escapeHtml(b.label)}" class="w-full h-full object-cover" />
+        </div>
+        <div class="t-xxs font-extrabold text-gray-500 tracking-widest uppercase">${escapeHtml(b.label)}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+  function selectBuddy(id) {
+    buddyState.selectedId = id;
+    applyBuddyToUI();
+    renderBuddyGrid();
+  }
+
+  function openBuddyCustomizer(show) {
+    const el = document.getElementById("buddy-customizer-screen");
+    if (!el) return;
+    el.classList.toggle("active", show);
+
+    if (show) {
+      // valorizza input nome
+      const nameInput = document.getElementById("buddy-name-input");
+      if (nameInput) nameInput.value = (buddyState.name || "Neuron").trim() || "Neuron";
+
+      renderBuddyGrid();
+      applyBuddyToUI();
+    }
+  }
+
+  function saveBuddySelection() {
+    const nameInput = document.getElementById("buddy-name-input");
+    buddyState.name = (nameInput?.value || buddyState.name || "Neuron").trim() || "Neuron";
+
+    localStorage.setItem(BUDDY_KEY, JSON.stringify(buddyState));
+    applyBuddyToUI();
+
+    const msg = document.getElementById("buddy-saved-msg");
+    if (msg) {
+      msg.classList.remove("opacity-0");
+      msg.classList.add("opacity-100");
+      clearTimeout(window.__buddySavedTimer);
+      window.__buddySavedTimer = setTimeout(() => {
+        msg.classList.remove("opacity-100");
+        msg.classList.add("opacity-0");
+      }, 1700);
+    }
+  }
+
+  function updateBuddyNamePreview(val) {
+    buddyState.name = (val || "").trim() || "Neuron";
+    applyBuddyToUI();
+  }
+
+
+  // =========================
+  // Chatbot Database (+200 Messages)
+  // =========================
+  const botDatabase = {
+    greetings: [
+      "Ciao! 👋 Come posso esserti utile oggi?",
+      "Ehi! Benvenuta su Neuron. Come stai?",
+      "Ciao! È un piacere vederti. Hai bisogno di qualcosa?",
+      "Salve! Pronto ad aiutarti con il tuo benessere.",
+      "Benritrovata! Come procede la tua giornata?",
+      "Ehi ciao! 😊 Spero tu stia bene. Dimmi tutto.",
+      "Buondì! Sono qui per te. Chiedimi pure.",
+      "Ciao Marta! (o come ti chiami 😉). Cosa c'è di nuovo?",
+      "Un saluto a te! Come va il tuo livello di energia oggi?",
+      "Ciao! Facciamo due chiacchiere? Sono tutto orecchi."
+    ],
+    tips: [
+      // 50 consigli generali
+      "Ricordati di bere un bicchiere d'acqua ora 💧",
+      "Fai un respiro profondo: inspira 4 secondi, trattieni 4, espira 6.",
+      "Staccare lo sguardo dallo schermo per 20 secondi aiuta gli occhi.",
+      "La costanza batte l'intensità. Fai poco, ma fallo spesso.",
+      "Se ti senti bloccata, fai una passeggiata di 5 minuti.",
+      "Scrivi 3 cose per cui sei grata oggi. Cambia la prospettiva.",
+      "Non devi essere perfetta, devi solo essere presente.",
+      "Il riposo è parte integrante della produttività, non un premio.",
+      "Prova a mangiare qualcosa di colorato oggi (frutta/verdura).",
+      "Spegni le notifiche per 30 minuti e goditi il silenzio.",
+      "Ascolta il tuo corpo: se sei stanca, riposa.",
+      "Un piccolo progresso è pur sempre un progresso.",
+      "Sii gentile con te stessa come lo saresti con un'amica.",
+      "La tua salute mentale vale più di qualsiasi scadenza.",
+      "Prova la regola dei 2 minuti: se puoi farlo subito, fallo.",
+      "Allunga la schiena e rilassa le spalle ora.",
+      "Hai sorriso oggi? Fallo ora, inganna il cervello in positivo!",
+      "Organizza la tua giornata la sera prima per meno stress.",
+      "Impara a dire di no senza sentirti in colpa.",
+      "La perfezione non esiste, l'autenticità sì.",
+      "Dedica 10 minuti al giorno solo a te stessa.",
+      "Leggi qualche pagina di un libro prima di dormire.",
+      "Evita il telefono appena sveglia. Goditi il risveglio.",
+      "Fai ordine sulla scrivania per fare ordine nella mente.",
+      "Chiama una persona cara solo per salutarla.",
+      "Riconosci le tue emozioni, non giudicarle.",
+      "Il fallimento è solo un feedback per imparare.",
+      "Non paragonare il tuo capitolo 1 al capitolo 20 di qualcun altro.",
+      "Prenditi cura del tuo sonno, è la tua ricarica.",
+      "Fai stretching leggero se sei stata seduta a lungo.",
+      "Ascolta musica che ti dà energia o ti rilassa.",
+      "Ricorda che è ok non essere ok a volte.",
+      "Celebra le piccole vittorie, anche quelle minuscole.",
+      "Visualizza il tuo obiettivo raggiunto per motivarti.",
+      "Riduci la caffeina dopo le 14:00 per dormire meglio.",
+      "Fai una doccia calda per sciogliere le tensioni.",
+      "Scrivi i tuoi pensieri su un diario per liberare la mente.",
+      "Cerca il contatto con la natura, anche solo guardando un albero.",
+      "Ridi! Guarda un video divertente se serve.",
+      "Sii paziente, i grandi cambiamenti richiedono tempo.",
+      "Concentrati su ciò che puoi controllare, lascia andare il resto.",
+      "Ogni giorno è una nuova opportunità per ricominciare.",
+      "Fai un complimento a te stessa oggi.",
+      "Non rimandare il tuo benessere a 'quando avrò tempo'.",
+      "Il multitasking riduce l'efficienza. Fai una cosa alla volta.",
+      "Chiedere aiuto è un atto di coraggio, non di debolezza.",
+      "Imposta dei confini sani con le persone intorno a te.",
+      "Respira. Tutto passa, anche questo momento.",
+      "Sei più forte di quanto pensi.",
+      "Fai oggi qualcosa che il tuo 'io futuro' ti ringrazierà."
+    ],
+    responses: {
+      "ansia": [
+        "L'ansia è una reazione naturale, ma non deve controllarti. Prova a focalizzarti sul respiro.",
+        "Mi dispiace che tu senta ansia. Hai provato la tecnica del 'grounding'? Nomina 5 cose che vedi ora.",
+        "Quando l'ansia sale, prova a scrivere esattamente cosa ti preoccupa. Spesso aiuta a ridimensionarlo.",
+        "Ricorda: i tuoi pensieri non sono fatti. Sono solo pensieri.",
+        "Sii gentile con te stessa in questo momento. L'ansia passerà."
+      ],
+      "stress": [
+        "Lo stress è un segnale che il corpo ti manda. Forse è ora di una pausa?",
+        "Dividi i compiti grandi in piccoli passi. Sembrerà tutto più gestibile.",
+        "Hai bevuto acqua? A volte la disidratazione peggiora lo stress.",
+        "Prova a staccare completamente per 10 minuti. Niente telefono, solo silenzio.",
+        "Lo stress cronico non fa bene. Cerca di trovare un momento per te oggi."
+      ],
+      "sonno": [
+        "Il sonno è fondamentale. Prova a spegnere gli schermi 1 ora prima di dormire.",
+        "Se non riesci a dormire, non restare a letto a girarti. Alzati e leggi qualcosa di noioso.",
+        "La camomilla o la melissa possono aiutare a rilassare il sistema nervoso.",
+        "Hai provato a mantenere la stanza fresca e buia? Aiuta la melatonina.",
+        "Evita pasti pesanti prima di coricarti. Il sonno ti ringrazierà."
+      ],
+      "studio": [
+        "Prova la tecnica del Pomodoro: 25 minuti di studio, 5 di pausa.",
+        "Non dimenticare di premiarti dopo una sessione intensa di studio.",
+        "Studiare è importante, ma il tuo cervello ha bisogno di riposo per memorizzare.",
+        "Se non riesci a concentrarti, cambia ambiente o materia per un po'.",
+        "Ricorda il tuo obiettivo finale: perché stai studiando? Tienilo a mente."
+      ],
+      "triste": [
+        "È ok sentirsi tristi. Accogli l'emozione, non respingerla.",
+        "A volte una bella passeggiata o un pianto liberatorio possono aiutare.",
+        "Sono qui se vuoi sfogarti. Scrivi pure tutto quello che senti.",
+        "Ricorda che anche le giornate finiscono. Domani è un altro giorno.",
+        "Fai qualcosa di piccolo che ti piace: un tè caldo, una canzone, un abbraccio."
+      ],
+      "motivazione": [
+        "Non aspettare la motivazione, inizia con la disciplina. La voglia verrà facendo.",
+        "Credi in te stessa. Hai superato il 100% dei tuoi giorni peggiori finora.",
+        "Il successo è la somma di piccoli sforzi ripetuti giorno dopo giorno.",
+        "Se il piano A non funziona, l'alfabeto ha altre 25 lettere!",
+        "Fallo per te stessa, non per gli altri. Sei il tuo miglior investimento."
+      ]
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadProfile();
+    applyProfileToUI();
+
+    loadBuddy();
+    applyBuddyToUI();
+
+    renderTasks();
+    updateProgress();
+    initDragScroll();
+
+    renderArticles();
+    renderLibrary();
+
+    renderEventsSection(); // ✅ nuovo layout eventi
+
+    initSwipeNav();
+  });
+
+  function loadProfile() {
+    try {
+      const raw = localStorage.getItem(PROFILE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      profile = { ...profile, ...parsed };
+    } catch (_) {}
+  }
+
+  function applyProfileToUI() {
+    document.getElementById("user-name").innerText = profile.name || "Marta";
+    document.getElementById("avatar-img").src = `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(profile.name || "Marta")}`;
+
+    document.getElementById("profile-avatar").src = `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(profile.name || "Marta")}`;
+    document.getElementById("profile-name").value = profile.name || "";
+    document.getElementById("profile-email").value = profile.email || "";
+
+    document.getElementById("profile-push").checked = !!profile.push;
+    document.getElementById("profile-events").checked = !!profile.events;
+    document.getElementById("profile-articles").checked = !!profile.articles;
+    document.getElementById("profile-tasks").checked = !!profile.tasks;
+  }
+
+  function openProfile(show) {
+    const el = document.getElementById("profile-screen");
+    el.classList.toggle("active", show);
+    if (show) applyProfileToUI();
+  }
+
+  function saveProfile() {
+    profile.name = (document.getElementById("profile-name").value || "").trim() || "Marta";
+    profile.email = (document.getElementById("profile-email").value || "").trim();
+
+    profile.push = document.getElementById("profile-push").checked;
+    profile.events = document.getElementById("profile-events").checked;
+    profile.articles = document.getElementById("profile-articles").checked;
+    profile.tasks = document.getElementById("profile-tasks").checked;
+
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    applyProfileToUI();
+
+    const msg = document.getElementById("profile-saved-msg");
+    if (msg) {
+      msg.classList.remove("opacity-0");
+      msg.classList.add("opacity-100");
+      clearTimeout(window.__profileSavedTimer);
+      window.__profileSavedTimer = setTimeout(() => {
+        msg.classList.remove("opacity-100");
+        msg.classList.add("opacity-0");
+      }, 2000);
+    }
+  }
+
+  // =========================
+  // Nav
+  // =========================
+  function setNavActive(screenName) {
+    const buttons = [
+      { name: 'dashboard', id: 'nav-btn-dashboard' },
+      { name: 'library', id: 'nav-btn-library' },
+      { name: 'events', id: 'nav-btn-events' }
+    ];
+
+    const activeClass = "bg-[#10b981] rounded-lg text-white shadow-lg shadow-emerald-200";
+    const inactiveText = "text-gray-300";
+
+    buttons.forEach(b => {
+      const btn = document.getElementById(b.id);
+      if (!btn) return;
+      const iconWrap = btn.firstElementChild;
+
+      if (b.name === screenName) {
+        iconWrap.className = "w-10 h-10 flex items-center justify-center " + activeClass;
+        btn.className = "cursor-pointer transition-all duration-200";
+        btn.classList.remove('text-gray-300');
+      } else {
+        iconWrap.className = "w-10 h-10 flex items-center justify-center";
+        btn.className = "cursor-pointer transition-all duration-200 " + inactiveText;
+      }
+    });
+  }
+
+  function switchScreen(screenName) {
+    document.querySelectorAll('.screen-content').forEach(el => {
+      el.style.display = '';
+      el.style.opacity = '';
+      el.style.transform = '';
+      el.style.zIndex = '';
+      el.style.transition = '';
+    });
+
+    document.querySelectorAll('.screen-content').forEach(s => s.classList.remove('active-screen'));
+    document.getElementById(screenName + '-screen').classList.add('active-screen');
+
+    setNavActive(screenName);
+
+    if (screenName === 'events') {
+      ensureEventsMap();
+      setTimeout(() => { if (eventsMap) eventsMap.invalidateSize(); }, 120);
+    }
+  }
+
+  // =========================
+  // Articles: detail + save
+  // =========================
+  function openArticle(id) {
+    const item = articlesData.find(a => a.id === id);
+    if (!item) return;
+    currentArticleId = id;
+
+    document.getElementById('article-header-title').innerText = item.title;
+    document.getElementById('article-header-sub').innerText = `${item.type} • ${item.time} • ${item.topic}`;
+
+    const tagsContainer = document.getElementById('article-tags');
+    tagsContainer.innerHTML = (item.tags || []).map(t => `
+      <span class="t-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full bg-emerald-50 text-[#10b981]">${escapeHtml(t)}</span>
+    `).join('');
+
+    document.getElementById('article-img').src = item.img;
+
+    const contentEl = document.getElementById('article-content');
+    contentEl.innerHTML = (item.content || []).map(p => `<p>${escapeHtml(p)}</p>`).join('');
+
+    updateArticleSaveUI(item.fav);
+
+    document.getElementById('article-screen').classList.add('active');
+    requestAnimationFrame(() => { document.getElementById('article-body').scrollTop = 0; });
+  }
+
+  function closeArticle() {
+    document.getElementById('article-screen').classList.remove('active');
+    currentArticleId = null;
+  }
+
+  function toggleSaveCurrentArticle() {
+    if (!currentArticleId) return;
+    const item = articlesData.find(a => a.id === currentArticleId);
+    if (!item) return;
+
+    item.fav = !item.fav;
+    updateArticleSaveUI(item.fav);
+
+    renderArticles();
+    renderLibrary();
+  }
+
+  function updateArticleSaveUI(isFav) {
+    const label = document.getElementById('article-save-label');
+    const heart = document.getElementById('article-save-heart');
+    if (isFav) { label.innerText = "Salvato"; heart.innerText = "❤"; }
+    else { label.innerText = "Salva"; heart.innerText = "♡"; }
+  }
+
+  // =========================
+  // Events: detail + join/unjoin
+  // =========================
+  function openEvent(id) {
+    const ev = eventsData.find(e => e.id === id);
+    if (!ev) return;
+    currentEventId = id;
+
+    document.getElementById('event-header-title').innerText = ev.title;
+    document.getElementById('event-header-sub').innerText = `${ev.type} • ${ev.date} • ${ev.time} • ${ev.topic}`;
+
+    const tagsContainer = document.getElementById('event-tags');
+    tagsContainer.innerHTML = (ev.tags || []).map(t => `
+      <span class="t-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full bg-emerald-50 text-[#10b981]">${escapeHtml(t)}</span>
+    `).join('');
+
+    document.getElementById('event-img').src = ev.img;
+
+    const contentEl = document.getElementById('event-content');
+    const paragraphs = [
+      `📍 <b>${escapeHtml(ev.place)}</b>`,
+      `🗓️ <b>${escapeHtml(ev.date)}</b> • ⏰ <b>${escapeHtml(ev.time)}</b>`,
+      ...ev.content
+    ];
+    contentEl.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+
+    updateEventJoinUI(ev.registered);
+
+    document.getElementById('event-screen').classList.add('active');
+    requestAnimationFrame(() => { document.getElementById('event-body').scrollTop = 0; });
+  }
+
+  function closeEvent() {
+    document.getElementById('event-screen').classList.remove('active');
+    currentEventId = null;
+  }
+
+  function toggleJoinCurrentEvent() {
+    if (!currentEventId) return;
+    toggleJoin(currentEventId);
+  }
+
+  function toggleJoin(id) {
+    const ev = eventsData.find(e => e.id === id);
+    if (!ev) return;
+
+    ev.registered = !ev.registered;
+
+    if (currentEventId === id) updateEventJoinUI(ev.registered);
+
+    // refresh “I miei eventi”
+    renderMyEvents();
+
+    // markers: restano filtrati, ma se cambi registrazione non cambia visibilità marker
+    updateMapMarkersFromFilters();
+  }
+
+  function updateEventJoinUI(isRegistered) {
+    const btn = document.getElementById('event-join-btn');
+    const label = document.getElementById('event-join-label');
+    const icon = document.getElementById('event-join-icon');
+
+    if (isRegistered) {
+      label.innerText = "Disiscriviti";
+      icon.innerText = "—";
+      btn.className = "flex-1 py-3 px-4 bg-gray-100 text-gray-800 font-semibold rounded-2xl shadow-sm hover:bg-gray-200 active:scale-[0.99] transition flex items-center justify-center gap-2";
+    } else {
+      label.innerText = "Iscriviti";
+      icon.innerText = "＋";
+      btn.className = "flex-1 py-3 px-4 bg-[#10b981] text-white font-semibold rounded-2xl shadow-md hover:bg-[#059669] active:scale-[0.99] transition flex items-center justify-center gap-2";
+    }
+  }
+
+  // =========================
+  // Events section layout
+  // =========================
+  function renderEventsSection() {
+    renderMyEvents();
+    renderEventFiltersRow();
+    if (document.getElementById('events-screen').classList.contains('active-screen')) {
+      ensureEventsMap();
+      setTimeout(() => eventsMap?.invalidateSize(), 120);
+    }
+  }
+
+  function renderMyEvents() {
+    const my = eventsData.filter(e => e.registered);
+    const myEl = document.getElementById('my-events-list');
+
+    if (my.length === 0) {
+      myEl.innerHTML = `<p class="t-sm text-gray-400 text-center py-6">Non sei iscritto a nessun evento.</p>`;
+      return;
+    }
+
+    myEl.innerHTML = my.map(ev => `
+      <div class="lib-list-card cursor-pointer group" onclick="openEvent(${ev.id})">
+        <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 relative">
+          <img src="${ev.img}" class="w-full h-full object-cover" alt="${escapeHtml(ev.title)}">
+          <div class="absolute bottom-1 right-1 bg-black/50 text-white t-xxs px-1.5 rounded">${escapeHtml(ev.time)}</div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <span class="t-xxs font-bold text-[#10b981] bg-emerald-50 px-2 py-0.5 rounded-full mb-1 inline-block uppercase tracking-wide">${escapeHtml(ev.topic)}</span>
+          <h4 class="t-md font-bold text-[#1a2e35] mb-1 leading-tight line-clamp-2">${escapeHtml(ev.title)}</h4>
+          <p class="t-xs text-gray-400">${escapeHtml(ev.type)} • ${escapeHtml(ev.date)} • ${escapeHtml(ev.place)}</p>
+          <p class="t-xs text-[#10b981] font-bold mt-1">✓ Iscritto</p>
+        </div>
+        <button onclick="event.stopPropagation(); toggleJoin(${ev.id})"
+          class="p-2 rounded-full transition-all transform active:scale-95 bg-gray-100 text-gray-800"
+          aria-label="Disiscriviti">
+          <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path>
+          </svg>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // ✅ MODIFICATO: Selezione esclusiva (un solo pulsante attivo in totale)
+  function renderEventFiltersRow() {
+    const allFilters = [
+      'Tutti', 
+      'Yoga & Meditazione', 
+      'Nutrizione', 
+      'Movimento',
+      'Workshop', 
+      'Outdoor'
+    ];
+
+    const container = document.getElementById('event-filters-combined');
+    if (!container) return;
+
+    // Crea i pulsanti in un unico flusso, permettendo la selezione singola
+    container.innerHTML = allFilters.map(f => `
+      <button
+        onclick="setSingleFilter('${escapeHtml(f)}')"
+        class="filter-chip chip-small ${activeEventFilter === f ? 'active' : 'inactive'}"
+      >${f}</button>
+    `).join('');
+  }
+
+  function setSingleFilter(val) {
+    // Se clicco quello attivo, rimango su quello attivo (o resetto a Tutti se preferisci, qui forzo switch)
+    // Logica: clicco X -> active=X. Clicco Y -> active=Y.
+    activeEventFilter = val;
+    renderEventFiltersRow();
+    updateMapMarkersFromFilters();
+  }
+
+  // =========================
+  // Leaflet map
+  // =========================
+  function ensureEventsMap() {
+    if (eventsMap) {
+      updateMapMarkersFromFilters();
+      return;
+    }
+    eventsMap = L.map('events-map', { zoomControl: false }).setView([45.4642, 9.19], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(eventsMap);
+    L.control.zoom({ position: 'topleft' }).addTo(eventsMap);
+    
+    eventsData.forEach(ev => {
+      const marker = L.marker([ev.lat, ev.lng]);
+      marker.on('click', () => openEvent(ev.id));
+      eventsMarkers.set(ev.id, marker);
+    });
+    updateMapMarkersFromFilters();
+  }
+
+  function eventMatchesFilters(ev) {
+    if (activeEventFilter === 'Tutti') return true;
+    // Il filtro attivo deve corrispondere O al topic O al type
+    return (ev.topic === activeEventFilter) || (ev.type === activeEventFilter);
+  }
+
+  function updateMapMarkersFromFilters() {
+    if (!eventsMap) return;
+    eventsData.forEach(ev => {
+      const marker = eventsMarkers.get(ev.id);
+      if (!marker) return;
+      const shouldShow = eventMatchesFilters(ev);
+      const isOnMap = eventsMap.hasLayer(marker);
+      if (shouldShow && !isOnMap) marker.addTo(eventsMap);
+      if (!shouldShow && isOnMap) eventsMap.removeLayer(marker);
+    });
+  }
+
+  // =========================
+  // Library
+  // =========================
+  function renderLibrary() {
+    const topics = ['Tutti', 'Psicologico', 'Alimentare'];
+    const types = ['Tutti', 'Guide', 'Articoli', 'Video'];
+
+    document.getElementById('filter-topic-container').innerHTML = topics.map(t =>
+      `<button onclick="setFilter('topic', '${t}')" class="filter-chip w-full ${currentTopic === t ? 'active' : 'inactive'}" style="font-size:12px;padding:10px 12px;">${t}</button>`
+    ).join('');
+
+    document.getElementById('filter-type-container').innerHTML = types.map(t =>
+      `<button onclick="setFilter('type', '${t}')" class="filter-chip w-full ${currentType === t ? 'active' : 'inactive'}" style="font-size:12px;padding:10px 12px;">${t}</button>`
+    ).join('');
+
+    const filtered = articlesData.filter(item => {
+      const matchTopic = currentTopic === 'Tutti' || item.topic === currentTopic;
+      const matchType = currentType === 'Tutti' || item.type === currentType;
+      return matchTopic && matchType;
+    });
+
+    const favs = articlesData.filter(i => i.fav);
+    const favContainer = document.getElementById('favorites-wrapper');
+    const favList = document.getElementById('favorites-list');
+
+    if (favs.length > 0) {
+      favContainer.classList.remove('hidden');
+      favList.innerHTML = favs.map(item => `
+        <div class="lib-list-card cursor-pointer group" onclick="openArticle(${item.id})">
+          <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 relative">
+            <img src="${item.img}" class="w-full h-full object-cover" alt="${escapeHtml(item.title)}">
+            <div class="absolute bottom-1 right-1 bg-black/50 text-white t-xxs px-1.5 rounded">${item.time}</div>
+          </div>
+          <div class="flex-1">
+            <span class="t-xxs font-bold text-[#10b981] bg-emerald-50 px-2 py-0.5 rounded-full mb-1 inline-block uppercase tracking-wide">${item.topic}</span>
+            <h4 class="t-md font-bold text-[#1a2e35] mb-1 leading-tight">${escapeHtml(item.title)}</h4>
+            <p class="t-xs text-gray-400">${item.type} • ${item.time}</p>
+          </div>
+          <button onclick="event.stopPropagation(); toggleLike(${item.id})"
+            class="p-2 rounded-full transition-all transform active:scale-95 text-red-500"
+            aria-label="Rimuovi dai preferiti">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+          </button>
+        </div>
+      `).join('');
+    } else {
+      favContainer.classList.add('hidden');
+      favList.innerHTML = '';
+    }
+
+    const mainList = document.getElementById('library-main-list');
+    if (filtered.length === 0) {
+      mainList.innerHTML = `<p class="text-gray-400 t-sm text-center py-10">Nessun risultato trovato.</p>`;
+    } else {
+      mainList.innerHTML = filtered.map(item => `
+        <div class="lib-list-card cursor-pointer group" onclick="openArticle(${item.id})">
+          <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 relative">
+            <img src="${item.img}" class="w-full h-full object-cover" alt="${escapeHtml(item.title)}">
+          </div>
+          <div class="flex-1">
+            <span class="t-xxs font-bold text-[#10b981] bg-emerald-50 px-2 py-0.5 rounded-full mb-1 inline-block uppercase tracking-wide">${item.topic}</span>
+            <h4 class="t-md font-bold text-[#1a2e35] mb-1 leading-tight">${escapeHtml(item.title)}</h4>
+            <p class="t-xs text-gray-400">${item.type} • ${item.time}</p>
+          </div>
+          <button onclick="event.stopPropagation(); toggleLike(${item.id})" class="p-2 rounded-full transition-all transform active:scale-95 ${item.fav ? 'text-red-500' : 'text-gray-300 hover:bg-gray-50'}" aria-label="Salva articolo">
+            <svg width="24" height="24" fill="${item.fav ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+          </button>
+        </div>
+      `).join('') + `<div style="height: calc(var(--nav-h) + 44px)"></div>`;
+    }
+  }
+
+  function setFilter(type, val) {
+    if (type === 'topic') currentTopic = val;
+    if (type === 'type') currentType = val;
+    renderLibrary();
+  }
+
+  function toggleLike(id) {
+    const item = articlesData.find(x => x.id === id);
+    if (item) {
+      item.fav = !item.fav;
+      renderArticles();
+      renderLibrary();
+      if (currentArticleId === id) updateArticleSaveUI(item.fav);
+    }
+  }
+
+  function renderArticles() {
+    const container = document.getElementById('home-articles-list');
+    container.innerHTML = articlesData.slice(0, 3).map(item => `
+      <div class="lib-list-card cursor-pointer group" onclick="openArticle(${item.id})">
+        <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 relative">
+          <img src="${item.img}" class="w-full h-full object-cover" alt="${escapeHtml(item.title)}">
+        </div>
+        <div class="flex-1 min-w-0">
+          <span class="t-xxs font-bold text-[#10b981] bg-emerald-50 px-2 py-0.5 rounded-full mb-1 inline-block uppercase tracking-wide">${item.topic}</span>
+          <h4 class="t-md font-bold text-[#1a2e35] mb-1 leading-tight line-clamp-2">${escapeHtml(item.title)}</h4>
+          <p class="t-xs text-gray-400">${item.type} • ${item.time}</p>
+        </div>
+        <button onclick="event.stopPropagation(); toggleLike(${item.id})" class="p-2 rounded-full transition-all transform active:scale-95 ${item.fav ? 'text-red-500' : 'text-gray-300 hover:bg-gray-50'}" aria-label="Salva articolo">
+          <svg width="24" height="24" fill="${item.fav ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+        </button>
+      </div>
+    `).join('') + `<div style="height: calc(var(--nav-h) + 44px)"></div>`;
+  }
+
+  // =========================
+  // Chat
+  // =========================
+  function toggleChat(show) {
+    const chatScreen = document.getElementById('chat-screen');
+    const navBar = document.getElementById('main-nav');
+    chatScreen.classList.toggle('active', show);
+
+    if (show) {
+      navBar.style.display = 'none';
+      requestAnimationFrame(() => {
+        const msgContainer = document.getElementById('chat-messages');
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+      });
+    } else {
+      setTimeout(() => { navBar.style.display = 'flex'; }, 100);
+      navBar.style.display = 'flex';
+    }
+  }
+
+  function handleChatEnter(e) { if (e.key === 'Enter') sendMessage(); }
+  
+  // ✅ MODIFICATO: ora accetta un tipo per lanciare la card
+  function sendSuggestion(text, type) { 
+    document.getElementById('chat-input').value = text; 
+    sendMessage(type); // Passa il tipo (article/event)
+  }
+
+  function sendMessage(cardType = null) {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    const container = document.getElementById('chat-messages');
+    
+    if (text) {
+      // 1. Messaggio Utente
+      container.insertAdjacentHTML('beforeend', `<div class="msg-bubble msg-user">${escapeHtml(text)}</div>`);
+      input.value = '';
+      requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
+
+      // 2. Risposta Bot
+      setTimeout(() => {
+        // Se è stato richiesto una card specifica dai pulsanti
+        if (cardType) {
+          const intro = cardType === 'article' ? "Ecco un articolo interessante per te! 📚" : "Ho trovato questo evento interessante 🗓️";
+          container.insertAdjacentHTML('beforeend', `<div class="msg-bubble msg-neuron">${intro}</div>`);
+          renderChatCard(cardType, container);
+        } else {
+          // Risposta normale basata sul testo
+          const response = getBotResponse(text);
+          container.insertAdjacentHTML('beforeend', `<div class="msg-bubble msg-neuron">${escapeHtml(response)}</div>`);
+        }
+        requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
+      }, 700);
+    }
+  }
+
+  function getBotResponse(input) {
+    const lower = input.toLowerCase();
+
+    // Saluti
+    const greetingsKeys = ['ciao', 'buongiorno', 'buonasera', 'salve', 'ehi'];
+    if (greetingsKeys.some(k => lower.includes(k))) {
+      return botDatabase.greetings[Math.floor(Math.random() * botDatabase.greetings.length)];
+    }
+
+    // Ricerca keyword nel database
+    for (const [key, answers] of Object.entries(botDatabase.responses)) {
+      if (lower.includes(key)) {
+        return answers[Math.floor(Math.random() * answers.length)];
+      }
+    }
+
+    // Fallback: Consiglio generico (Tip)
+    return botDatabase.tips[Math.floor(Math.random() * botDatabase.tips.length)];
+  }
+
+  // ✅ Nuova funzione: Renderizza una card nella chat
+  function renderChatCard(type, container) {
+    let item;
+    let clickFn;
+    
+    if (type === 'article') {
+      item = articlesData[Math.floor(Math.random() * articlesData.length)];
+      clickFn = `openArticle(${item.id})`;
+    } else {
+      item = eventsData[Math.floor(Math.random() * eventsData.length)];
+      clickFn = `openEvent(${item.id})`;
+    }
+
+    const html = `
+      <div class="chat-card-container" onclick="${clickFn}">
+        <div class="w-full h-24 rounded-xl overflow-hidden mb-2 relative">
+           <img src="${item.img}" class="w-full h-full object-cover" />
+           <div class="absolute bottom-1 right-1 bg-black/60 text-white t-xxs px-2 py-0.5 rounded font-bold">
+             ${type === 'article' ? item.time : item.date}
+           </div>
+        </div>
+        <div class="t-xs font-bold text-[#10b981] uppercase mb-1">${item.topic}</div>
+        <div class="t-sm font-bold text-[#1a2e35] leading-tight mb-1">${item.title}</div>
+        <div class="t-xs text-gray-400 truncate">${type === 'article' ? item.type : item.place}</div>
+      </div>
+    `;
+    container.insertAdjacentHTML('beforeend', html);
+  }
+
+  function handleDashboardChatEnter(e) {
+    if (e.key === 'Enter') { e.preventDefault(); sendFromDashboard(); }
+  }
+
+  function sendFromDashboard() {
+    const input = document.getElementById('dashboard-chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    toggleChat(true);
+    document.getElementById('chat-input').value = text;
+    sendMessage();
+    input.value = '';
+  }
+
+  // =========================
+  // Drag scroll
+  // =========================
+  function initDragScroll() {
+    const containers = document.querySelectorAll('.scroll-container');
+
+    containers.forEach(el => {
+      let isDown = false;
+      let isDragging = false;
+      let startY = 0;
+      let startScrollTop = 0;
+      let pointerId = null;
+
+      const DRAG_THRESHOLD = 6;
+
+      el.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('#favorites-list')) return;
+        if (e.target.closest('#events-map')) return;
+        if (e.target.closest('input, textarea, button, a')) return;
+
+        isDown = true;
+        isDragging = false;
+        pointerId = e.pointerId;
+
+        startY = e.clientY;
+        startScrollTop = el.scrollTop;
+      });
+
+      el.addEventListener('pointermove', (e) => {
+        if (!isDown) return;
+        if (e.target.closest('#favorites-list')) return;
+        if (e.target.closest('#events-map')) return;
+
+        const dy = e.clientY - startY;
+
+        if (!isDragging) {
+          if (Math.abs(dy) < DRAG_THRESHOLD) return;
+          isDragging = true;
+          el.setPointerCapture(pointerId);
+          el.style.cursor = 'grabbing';
+        }
+
+        e.preventDefault();
+        el.scrollTop = startScrollTop - dy;
+      }, { passive: false });
+
+      const end = () => {
+        isDown = false;
+        isDragging = false;
+        pointerId = null;
+        el.style.cursor = 'grab';
+      };
+
+      el.addEventListener('pointerup', end);
+      el.addEventListener('pointercancel', end);
+
+      el.addEventListener('click', (e) => {
+        if (isDragging) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }, true);
+    });
+  }
+
+  // =========================
+  // Swipe nav
+  // =========================
+  function initSwipeNav() {
+    const frame = document.querySelector('.iphone-frame');
+    if (!frame) return;
+
+    const screens = ['dashboard', 'library', 'events'];
+
+    let isDown = false;
+    let isSwiping = false;
+    let startX = 0, startY = 0;
+    let lastX = 0;
+
+    let activeName = '';
+    let activeEl = null;
+    let otherEl = null;
+
+    const INTENT_THRESHOLD = 10;
+    const SWIPE_TRIGGER = 70;
+    const VERTICAL_GUARD = 18;
+
+    function getActiveScreenName() {
+      if (document.getElementById('library-screen').classList.contains('active-screen')) return 'library';
+      if (document.getElementById('events-screen').classList.contains('active-screen')) return 'events';
+      return 'dashboard';
+    }
+
+    function isSlideOpen() {
+      return document.getElementById('chat-screen')?.classList.contains('active') ||
+             document.getElementById('goals-screen')?.classList.contains('active') ||
+             document.getElementById('article-screen')?.classList.contains('active') ||
+             document.getElementById('event-screen')?.classList.contains('active') ||
+             document.getElementById('profile-screen')?.classList.contains('active') ||
+             document.getElementById('buddy-customizer-screen')?.classList.contains('active') ||
+             !document.getElementById('delete-modal')?.classList.contains('hidden');
+    }
+
+    function pickOther(currentName, dx) {
+      const idx = screens.indexOf(currentName);
+      if (idx === -1) return null;
+      if (dx < 0) { if (idx < screens.length - 1) return screens[idx + 1]; } 
+      else { if (idx > 0) return screens[idx - 1]; }
+      return null;
+    }
+
+    function prepareOther(otherName, width, dx) {
+      otherEl = document.getElementById(otherName + '-screen');
+      otherEl.style.display = 'block';
+      otherEl.style.opacity = '1';
+      otherEl.style.zIndex = '9';
+      otherEl.style.transition = 'none';
+      activeEl.style.transition = 'none';
+      const startOffset = dx < 0 ? width : -width;
+      otherEl.style.transform = `translateX(${startOffset}px)`;
+    }
+
+    function cleanupPreview() {
+      screens.forEach(name => {
+        const el = document.getElementById(name + '-screen');
+        if (!el) return;
+        el.style.transition = '';
+        el.style.transform = '';
+        el.style.zIndex = '';
+        if (!el.classList.contains('active-screen')) {
+          el.style.display = 'none';
+          el.style.opacity = '';
+        }
+      });
+    }
+
+    function animateTo(targetDx, width, done) {
+      activeEl.style.transition = 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
+      if (otherEl) otherEl.style.transition = 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
+      activeEl.style.transform = `translateX(${targetDx}px)`;
+      if (otherEl) {
+        const otherStart = (targetDx < 0) ? (targetDx + width) : (targetDx - width);
+        otherEl.style.transform = `translateX(${otherStart}px)`;
+      }
+      const onEnd = () => {
+        activeEl.removeEventListener('transitionend', onEnd);
+        done?.();
+      };
+      activeEl.addEventListener('transitionend', onEnd);
+    }
+
+    frame.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('#main-nav')) return;
+      if (e.target.closest('#favorites-list')) return;
+      if (e.target.closest('#events-map')) return;
+      if (e.target.closest('input, textarea, button, a')) return;
+      if (isSlideOpen()) return;
+
+      isDown = true;
+      isSwiping = false;
+
+      activeName = getActiveScreenName();
+      activeEl = document.getElementById(activeName + '-screen');
+
+      startX = lastX = e.clientX;
+      startY = e.clientY;
+    });
+
+    frame.addEventListener('pointermove', (e) => {
+      if (!isDown) return;
+      if (e.target.closest('#favorites-list')) return;
+      if (e.target.closest('#events-map')) return;
+
+      lastX = e.clientX;
+      const dx = lastX - startX;
+      const dy = e.clientY - startY;
+      const width = frame.clientWidth;
+
+      if (Math.abs(dy) > VERTICAL_GUARD && Math.abs(dy) > Math.abs(dx)) return;
+
+      if (!isSwiping) {
+        if (Math.abs(dx) < INTENT_THRESHOLD) return;
+        if (Math.abs(dx) <= Math.abs(dy)) return;
+
+        const otherName = pickOther(activeName, dx);
+        if (!otherName) return;
+
+        isSwiping = true;
+        prepareOther(otherName, width, dx);
+
+        e.preventDefault();
+        e.stopPropagation();
+      } else {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      activeEl.style.transform = `translateX(${dx}px)`;
+      if (otherEl) {
+        const otherStart = (dx < 0) ? (dx + width) : (dx - width);
+        otherEl.style.transform = `translateX(${otherStart}px)`;
+      }
+    }, { passive: false });
+
+    frame.addEventListener('pointerup', () => {
+      if (!isDown) return;
+      isDown = false;
+      if (!isSwiping) return;
+
+      const dx = lastX - startX;
+      const width = frame.clientWidth;
+      const nextName = pickOther(activeName, dx);
+
+      if (!nextName || Math.abs(dx) < SWIPE_TRIGGER) {
+        animateTo(0, width, () => { cleanupPreview(); isSwiping = false; });
+        return;
+      }
+
+      const targetDx = dx < 0 ? -width : width;
+      animateTo(targetDx, width, () => {
+        switchScreen(nextName);
+        cleanupPreview();
+        isSwiping = false;
+      });
+    });
+
+    frame.addEventListener('pointercancel', () => {
+      isDown = false;
+      isSwiping = false;
+      cleanupPreview();
+    });
+  }
+
+  // =========================
+  // Goals / Tasks
+  // =========================
+  function toggleGoals(show) { document.getElementById('goals-screen').classList.toggle('active', show); }
+  function handleEnter(e) { if (e.key === 'Enter') addTask(); }
+
+  function addTask() {
+    const input = document.getElementById('new-task-input');
+    const text = input.value.trim();
+    if (text) {
+      tasks.push({ id: Date.now(), text, completed: false });
+      input.value = '';
+      renderTasks();
+      updateProgress();
+      const container = document.getElementById('goals-screen');
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    }
+  }
+
+  function toggleTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (task) { task.completed = !task.completed; renderTasks(); updateProgress(); }
+  }
+
+  function askDeleteTask(e, id) {
+    e.stopPropagation(); taskToDeleteId = id;
+    const modal = document.getElementById('delete-modal');
+    const content = document.getElementById('delete-modal-content');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modal.classList.remove('opacity-0');
+      content.classList.remove('scale-95');
+      content.classList.add('scale-100');
+    }, 10);
+  }
+
+  function closeDeleteModal() {
+    const modal = document.getElementById('delete-modal');
+    const content = document.getElementById('delete-modal-content');
+    modal.classList.add('opacity-0');
+    content.classList.remove('scale-100');
+    content.classList.add('scale-95');
+    setTimeout(() => { modal.classList.add('hidden'); taskToDeleteId = null; }, 200);
+  }
+
+  function confirmDelete() {
+    if (taskToDeleteId) { tasks = tasks.filter(t => t.id !== taskToDeleteId); renderTasks(); updateProgress(); }
+    closeDeleteModal();
+  }
+
+  function renderTasks() {
+    const container = document.getElementById('tasks-container');
+    container.innerHTML = tasks.length === 0
+      ? '<p class="text-center text-gray-400 t-sm py-4">Nessun obiettivo.</p>'
+      : tasks.map(task => `
+        <div class="task-row bg-white p-5 rounded-3xl flex items-center justify-between shadow-sm cursor-pointer group hover:shadow-md transition-all ${task.completed ? 'is-completed' : ''}" onclick="toggleTask(${task.id})">
+          <div class="flex items-center gap-4 overflow-hidden">
+            <div class="checkbox-custom"></div>
+            <span class="task-text t-sm font-medium truncate select-none">${escapeHtml(task.text)}</span>
+          </div>
+          <button onclick="askDeleteTask(event, ${task.id})" class="text-gray-300 hover:text-red-400 transition-colors p-2 opacity-0 group-hover:opacity-100">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </div>
+      `).join('');
+  }
+
+  function updateProgress() {
+    const total = tasks.length;
+    const completed = tasks.filter(t => t.completed).length;
+    const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+    document.querySelectorAll('.percent-text').forEach(el => el.innerText = percentage + '%');
+    document.getElementById('circle-dash').style.strokeDashoffset = 314.15 - (percentage / 100 * 314.15);
+    document.getElementById('circle-goals').style.strokeDashoffset = 376.99 - (percentage / 100 * 376.99);
+
+    const badge = document.getElementById('status-badge');
+    if (percentage === 100 && total > 0) { badge.innerText = "Completato"; badge.classList.replace('bg-red-400', 'bg-[#10b981]'); }
+    else { badge.innerText = "In Corso"; badge.classList.replace('bg-[#10b981]', 'bg-red-400'); }
+  }
+
+  // =========================
+  // Utils
+  // =========================
+  function shareMock() { alert("Condivisione (mock)"); }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  // =========================
+  // Fake Mobile Keyboard (Home "Scrivi qui")
+  // =========================
+  let __kbTargetInputId = null;
+  let __kbShift = false;
+  let __kbEnterMode = 'dashboard';
+
+  function openMobileKeyboard(targetInputId, enterMode = 'dashboard') {
+    __kbTargetInputId = targetInputId;
+    __kbEnterMode = enterMode;
+
+    const kb = document.getElementById('mobile-keyboard');
+    const input = document.getElementById(targetInputId);
+    if (!kb || !input) return;
+
+    // Evita l'apertura della tastiera reale su mobile: scriviamo via tasti finti
+    input.setAttribute('readonly', 'readonly');
+
+    kb.classList.add('active');
+    kb.setAttribute('aria-hidden', 'false');
+
+    // porta l'input in vista (soprattutto su mobile)
+    setTimeout(() => {
+      try { input.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (_) {}
+    }, 120);
+  }
+
+  function closeMobileKeyboard() {
+    const kb = document.getElementById('mobile-keyboard');
+    if (!kb) return;
+
+    kb.classList.remove('active');
+    kb.setAttribute('aria-hidden', 'true');
+
+    // ripristina input
+    if (__kbTargetInputId) {
+      const input = document.getElementById(__kbTargetInputId);
+      if (input) input.removeAttribute('readonly');
+    }
+    __kbTargetInputId = null;
+    __kbShift = false;
+    __kbEnterMode = 'dashboard';
+    const shiftBtn = document.getElementById('kb-shift');
+    if (shiftBtn) shiftBtn.classList.remove('green');
+  }
+
+  function kbGetInput() {
+    if (!__kbTargetInputId) return null;
+    return document.getElementById(__kbTargetInputId);
+  }
+
+  function kbToggleShift() {
+    __kbShift = !__kbShift;
+    const shiftBtn = document.getElementById('kb-shift');
+    if (shiftBtn) shiftBtn.classList.toggle('green', __kbShift);
+  }
+
+  function kbKey(ch) {
+    const input = kbGetInput();
+    if (!input) return;
+
+    let out = ch;
+    if (__kbShift && /^[a-z]$/.test(ch)) out = ch.toUpperCase();
+
+    input.value = (input.value || '') + out;
+
+    // trigger oninput handlers (es. preview nome buddy)
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    // shift singolo stile iOS (si spegne dopo 1 lettera)
+    if (__kbShift) {
+      __kbShift = false;
+      const shiftBtn = document.getElementById('kb-shift');
+      if (shiftBtn) shiftBtn.classList.remove('green');
+    }
+  }
+
+  function kbSpace() {
+    const input = kbGetInput();
+    if (!input) return;
+    input.value = (input.value || '') + ' ';
+
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  function kbBackspace() {
+    const input = kbGetInput();
+    if (!input) return;
+    const v = input.value || '';
+    input.value = v.slice(0, -1);
+
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  function kbEnter() {
+    // Invio: comportamento diverso in base al target
+    if (__kbEnterMode === 'dashboard') {
+      closeMobileKeyboard();
+      sendFromDashboard();
+      return;
+    }
+    // Default: "Done" (chiude soltanto)
+    closeMobileKeyboard();
+  }
+
+  // Aggancio SOLO all'input "Scrivi qui" della home, senza toccare altro
+  document.addEventListener('DOMContentLoaded', () => {
+    const homeInput = document.getElementById('dashboard-chat-input');
+    if (!homeInput) return;
+
+    // apri tastiera finta al tap/click
+    homeInput.addEventListener('pointerdown', (e) => {
+      // mantiene il comportamento corrente (non aprire la chat)
+      e.stopPropagation();
+      openMobileKeyboard('dashboard-chat-input', 'dashboard');
+    });
+
+    
+    // apri la stessa tastiera finta anche per il nome del buddy (nella schermata personalizza buddy)
+    const buddyNameInput = document.getElementById('buddy-name-input');
+    if (buddyNameInput) {
+      buddyNameInput.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        openMobileKeyboard('buddy-name-input', 'done');
+      });
+    }
+
+    // chiudi tastiera se tocchi fuori (ma dentro iphone-frame)
+    const frame = document.querySelector('.iphone-frame');
+    frame?.addEventListener('pointerdown', (e) => {
+      const kb = document.getElementById('mobile-keyboard');
+      if (!kb || !kb.classList.contains('active')) return;
+      if (e.target.closest('#mobile-keyboard')) return;
+      if (e.target.closest('#dashboard-chat-input')) return;
+      if (e.target.closest('#buddy-name-input')) return;
+      closeMobileKeyboard();
+    });
+  });
+
+</script>
+</body>
+</html>
