@@ -31,7 +31,8 @@ Questa repository raccoglie l'intero processo di design e sviluppo, suddiviso pe
 * **C2 - Refinement:** Raffinamento dei requisiti, focus group e definizione delle Personas.
 * **C3 - Prototipazione Low-Fi:** Task analysis, storyboard e primi prototipi esplorativi (Mobile vs Web).
 * **C4 - Mid-Fi Design:** Specifiche di visual design, palette, tipografia e prototipo interattivo.
-* **C5 - High-Fi & Testing:** Prototipo finale ad alta fedeltà e test di usabilità.
+* **C5 - Euristica:** Valutazione euristica progetto "WildTribes".
+* **C6 - High-Fi & Testing:** Prototipo finale ad alta fedeltà e test di usabilità.
 
 ---
 
